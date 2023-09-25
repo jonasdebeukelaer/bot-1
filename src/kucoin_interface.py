@@ -17,13 +17,13 @@ class KucoinInterface:
     self.market_client = Market(self.URL)
     self.price_history = []
 
-  def execute_trade(self, amount, price):
+  def execute_trade(self, size, price):
     # add actual trading command for the KuCoin
-    self.trade_client.create_market_order('BTC-USDT', 'buy', size=amount)
+    self.trade_client.create_market_order('BTC-GBP', 'buy', size=size)
 
   def update_prices(self):
     # Query the last price of BTC and append to price history
-    latest_price = self.market_client.get_ticker('BTC-USDT')['price']
+    latest_price = self.market_client.get_ticker('BTC-GBP')['price']
     self.price_history.append(latest_price)
 
     # Calculate and store trading indicators
