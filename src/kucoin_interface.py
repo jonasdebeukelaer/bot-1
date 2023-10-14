@@ -1,37 +1,59 @@
 import os
+import time
+import json
 
-from kucoin.client import Trade, Market
-from peewee import PostgresqlDatabase
-from playhouse.shortcuts import model_to_dict
-from metrics import calculate_EMA, calculate_RSI, calculate_Fear_Greed_Index
+from kucoin.client import Trade, User, Market
+from logger import log
 
 
 class KucoinInterface:
-  API_KEY = os.environ.get("KUCOIN_API_KEY")
-  API_SECRET = os.environ.get("KUCOIN_API_SECRET")
-  API_PASSPHRASE = os.environ.get("KUCOIN_API_PASSPHRASE")
-  URL = os.environ.get("KUCOIN_URL")
+    def __init__(self):
+        API_KEY = os.environ.get("KUCOIN_API_KEY")
+        API_SECRET = os.environ.get("KUCOIN_API_SECRET")
+        API_PASSPHRASE = os.environ.get("KUCOIN_API_PASSPHRASE")
+        URL = os.environ.get("KUCOIN_URL")
+        self.trade_client = Trade(key=API_KEY, secret=API_SECRET, passphrase=API_PASSPHRASE, url=URL)
+        self.user_client = User(key=API_KEY, secret=API_SECRET, passphrase=API_PASSPHRASE, url=URL)
+        self.market_client = Market(key=API_KEY, secret=API_SECRET, passphrase=API_PASSPHRASE, url=URL)
 
-  def __init__(self):
-    self.trade_client = Trade(key=self.API_KEY, secret=self.API_SECRET, passphrase=self.API_PASSPHRASE, url=self.URL)
-    self.market_client = Market(self.URL)
-    self.price_history = []
+    def execute_trade(self, size, side, price):
+        # TODO: change to limit order when ready
+        id = f"{str(time.time_ns())[:-5]}_{size}_{side}_{price}"
 
-  def execute_trade(self, size, price):
-    # add actual trading command for the KuCoin
-    self.trade_client.create_market_order('BTC-GBP', 'buy', size=size)
+        log(f"Executing trade: {id}")
+        self.trade_client.create_market_order(clientOid=id, symbol="BTC-GBP", side=side, size=size)
 
-  def update_prices(self):
-    # Query the last price of BTC and append to price history
-    latest_price = self.market_client.get_ticker('BTC-GBP')['price']
-    self.price_history.append(latest_price)
+    def get_portfolio_breakdown(self):
+        data = self.user_client.get_account_list()
 
-    # Calculate and store trading indicators
-    self.ema_50 = calculate_EMA(self.price_history, 50)
-    self.ema_200 = calculate_EMA(self.price_history, 200)
-    self.ema_800 = calculate_EMA(self.price_history, 800)
-    self.rsi = calculate_RSI(self.price_history)
-    self.fear_greed_index = calculate_Fear_Greed_Index(self.price_history)
+        output = []
+        for entry in data:
+            if entry["currency"] not in ["GBP", "USDT", "BTC"]:
+                continue
 
-  def get_trade_indicators(self):
-    return self.price_history, self.ema_50, self.ema_200, self.ema_800, self.rsi, self.fear_greed_index
+            new_entry = entry
+            del new_entry["id"]
+            del new_entry["type"]
+
+            output.append(new_entry)
+
+        log(f"Portfolio breakdown: {output}")
+        return output
+
+
+# test
+if __name__ == "__main__":
+    from dotenv import load_dotenv
+
+    load_dotenv()
+    kucoin = KucoinInterface()
+
+    data = kucoin.get_portfolio_breakdown()
+
+    print(data)
+
+    print("----------")
+    symbols = kucoin.market_client.get_symbol_list_v2()
+    for symbol in symbols:
+        if symbol["symbol"] == "BTC-GBP":
+            print(symbol)
