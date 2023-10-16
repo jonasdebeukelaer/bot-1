@@ -1,0 +1,32 @@
+steps:
+  # Build the container image and push it with Kaniko
+  - id: 'build image'
+    name: 'gcr.io/kaniko-project/executor:latest'
+    waitFor: ['-']
+    args:
+      - --dockerfile=Dockerfile
+      - --context=.
+      - --cache=true
+      - --cache-ttl=168h
+      - --destination=eu.gcr.io/$PROJECT_ID/bot-1:latest
+
+  # Deploy the bot-1 image to Cloud Run
+  - id: 'deploy bot-1 service'
+    name: 'gcr.io/cloud-builders/gcloud'
+    waitFor: [ 'build image' ]
+    entrypoint: 'bash'
+    args:
+      - -c
+      - |
+        gcloud run deploy bot-1 \
+        --image eu.gcr.io/$PROJECT_ID/bot-1:latest \
+        --region europe-west1 \
+        --platform managed \
+        --no-allow-unauthenticated \
+        --cpu 1 \
+        --memory 2Gi \
+        --min-instances 1 \
+        --max-instances 1 \
+        --set-secrets /mnt2/secrets.env=crypto-gpt-env-secrets:5
+
+# TODO: rename secret to more relevant name
