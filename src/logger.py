@@ -7,10 +7,12 @@ logging.getLogger().addHandler(logging.StreamHandler())
 # TODO: change to class
 counter = 1
 
+
 def log(msg: Any) -> None:
     global counter
     logging.info(f"{counter}: " + msg)
     counter += 1
+
 
 def reset_counter() -> None:
     global counter
