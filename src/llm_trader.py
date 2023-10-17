@@ -11,7 +11,9 @@ class Trader:
         if openai.api_key is None:
             raise ValueError("OPENAI_API_KEY is not set in the environment variables")
 
-    def get_trading_instructions(self, latest_indicators: Dict[str, Any], portfolio_breakdown: List[Dict]):
+    def get_trading_instructions(
+        self, latest_indicators: Dict[str, Any], portfolio_breakdown: List[Dict], last_trades: List[Dict]
+    ):
         try:
             resp = openai.ChatCompletion.create(
                 model="gpt-4",
@@ -21,6 +23,7 @@ class Trader:
                         "content": "You are an extremely savvy trader. You have been trading bitcoin for years and have made a lot of money. Provide recommendations avoiding things like FOMO and FUD.",
                     },
                     {"role": "system", "content": f"Your trading porfolio breakdown: {portfolio_breakdown}"},
+                    {"role": "system", "content": f"Your last 20 trades: {last_trades}"},
                     {
                         "role": "system",
                         "content": "price and indicators of bitcoin" + str(latest_indicators),

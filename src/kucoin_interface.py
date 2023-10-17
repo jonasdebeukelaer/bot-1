@@ -44,6 +44,25 @@ class KucoinInterface:
         log(f"Portfolio breakdown: {output}")
         return output
 
+    def get_last_trades(self, symbol="BTC-GBP", limit=20):
+        # just look at first page for now as a limit
+        data = self.trade_client.get_fill_list(tradeType="TRADE", symbol=symbol, pageSize=limit)
+        cleaned = []
+        for item in data["items"]:
+            cleaned.append(
+                {
+                    "symbol": item["symbol"],
+                    "side": item["side"],
+                    "price": item["price"],
+                    "size": item["size"],
+                    "fee": f'{item["fee"]} {item["feeCurrency"]}',
+                    "createdAt": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(item["createdAt"] / 1000)),
+                }
+            )
+
+        log(f"Last {limit} trades: {cleaned}")
+        return data["items"]
+
 
 # test
 if __name__ == "__main__":
@@ -61,3 +80,6 @@ if __name__ == "__main__":
     for symbol in symbols:
         if symbol["symbol"] == "BTC-GBP":
             print(symbol)
+
+    trades = kucoin.get_last_trades("BTC-GBP")
+    # print(trades)
