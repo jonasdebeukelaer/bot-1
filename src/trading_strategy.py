@@ -14,14 +14,21 @@ class TradingStrategy:
         self.trader = Trader()
 
     def execute(self):
-        # Call GPT3 with indicators to decide if we should call GPT4
-        answer = self.market_monitor.check_market(self.crypto_indictators.get_latest())
+        logger.reset_counter()
+
+        logger.log("Starting new trading strategy execution...")
+
+        logger.log("Getting portfolio breakdown...")
+        portfolio_breakdown = self.exchange_interface.get_portfolio_breakdown()
+
+        logger.log("Checking market...")
+        answer = self.market_monitor.check_market(self.crypto_indictators.get_latest(), portfolio_breakdown)
 
         log_msg = "Decided to call GPT4: {}. Reasoning: {}".format(answer["should_call"], answer["reasoning"])
         logger.log(log_msg)
 
         if answer["should_call"]:
-            portfolio_breakdown = self.exchange_interface.get_portfolio_breakdown()
+            logger.log("Calling GPT4 for trading decision...")
             trading_instructions = self.trader.get_trading_instructions(
                 self.crypto_indictators.indicator_history, portfolio_breakdown
             )
@@ -34,3 +41,5 @@ class TradingStrategy:
             )
 
             logger.log("Made trade.")
+        
+        logger.log("Finished execution\n")

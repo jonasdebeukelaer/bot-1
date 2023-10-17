@@ -17,6 +17,10 @@ class KucoinInterface:
         self.market_client = Market(key=API_KEY, secret=API_SECRET, passphrase=API_PASSPHRASE, url=URL)
 
     def execute_trade(self, size, side, price):
+        if size == 0:
+            log("No trade wanted (trade size = 0)")
+            return
+
         # TODO: change to limit order when ready
         id = f"{str(time.time_ns())[:-5]}_{size}_{side}_{price}"
 

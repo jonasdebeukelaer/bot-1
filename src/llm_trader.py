@@ -39,7 +39,7 @@ class Trader:
                             "properties": {
                                 "size": {
                                     "type": "number",
-                                    "description": "The size of the trading order.",
+                                    "description": "The size of the trading order. Set to 0 if you do not want to make any trade.",
                                 },
                                 "price": {
                                     "type": "number",
