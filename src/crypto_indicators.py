@@ -1,6 +1,9 @@
 import os
 import requests
 from typing import Dict, Any
+import urllib3
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 INSTANTANEOUS_RESULT_COUNT = 1
 MAX_INDICTAOR_HISTORY = 20
@@ -73,7 +76,9 @@ class CryptoIndicators:
 
     def get_alternative_me_indicators(self):
         response = requests.get(
-            "https://api.alternative.me/fng/", params={"limit": INSTANTANEOUS_RESULT_COUNT, "date_format": "uk"}
+            "https://api.alternative.me/fng/",
+            params={"limit": INSTANTANEOUS_RESULT_COUNT, "date_format": "uk"},
+            verify=False,
         )
         data = response.json()
 

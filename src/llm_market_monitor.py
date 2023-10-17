@@ -1,6 +1,6 @@
 import os
 import json
-from typing import Dict, Any
+from typing import Dict, Any, List
 
 import openai
 
@@ -11,7 +11,7 @@ class MarketMonitor:
         if openai.api_key is None:
             raise ValueError("OPENAI_API_KEY is not set in the environment variables")
 
-    def check_market(self, latest_indicators: Dict[str, Any]) -> Dict[str, Any]:
+    def check_market(self, latest_indicators: Dict[str, Any], portfolio_breakdown: List[Dict]) -> Dict[str, Any]:
         try:
             # Call GPT3 with indicators to decide if we should call GPT4
             resp = openai.ChatCompletion.create(
@@ -19,15 +19,16 @@ class MarketMonitor:
                 messages=[
                     {
                         "role": "system",
-                        "content": "You are an extremely savvy trader. You have been trading bitcoin for years and have made a lot of money. Provide recommendations avoiding things like FOMO and FUD.",
+                        "content": "You are an extremely savvy trader. You have been trading bitcoin for years and have made a lot of money. Provide recommendations avoiding things like FOMO and FUD. You are requested to make a decision once an hour, so take this into account when making your decision.",
                     },
+                    {"role": "system", "content": f"Your trading porfolio breakdown: {portfolio_breakdown}"},
                     {
                         "role": "system",
                         "content": "price and indicators of bitcoin" + str(latest_indicators),
                     },
                     {
                         "role": "user",
-                        "content": "Given the price and indicators of bitcoin, should we call GPT4 to make a trade decision based off the latest price movement and indicators? Answer this and provide a reason for your decision.",
+                        "content": "Given the price and indicators of bitcoin, should we call GPT4 to make a trade decision based off the latest price movement and indicators and their recent history? Answer this and provide a reason for your decision.",
                     },
                 ],
                 functions=[
