@@ -1,15 +1,13 @@
-# Use an official Python base image from the Docker Hub
-FROM python:3.10-slim AS base
+FROM python:3.8.6-slim AS base
 
-# Install utilities
-RUN apt-get update && apt-get install -y \
-    curl jq wget git build-essential \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && \
+    apt-get install -y curl jq wget git build-essential ca-certificates && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 
 FROM base as release
 
-# Set environment variables
 ENV PIP_NO_CACHE_DIR=yes \
     PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \

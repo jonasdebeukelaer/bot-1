@@ -15,7 +15,7 @@ class MarketMonitor:
         try:
             # Call GPT3 with indicators to decide if we should call GPT4
             resp = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",
+                model="gpt-3.5-turbo-1106",
                 messages=[
                     {
                         "role": "system",
