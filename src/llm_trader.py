@@ -16,14 +16,14 @@ class Trader:
     ):
         try:
             resp = openai.ChatCompletion.create(
-                model="gpt-4",
+                model="gpt-4-1106-preview",
                 messages=[
                     {
                         "role": "system",
                         "content": "You are an extremely savvy trader. You have been trading bitcoin for years and have made a lot of money. Provide recommendations avoiding things like FOMO and FUD.",
                     },
                     {"role": "system", "content": f"Your trading porfolio breakdown: {portfolio_breakdown}"},
-                    {"role": "system", "content": f"Your last 20 trades: {last_trades}"},
+                    {"role": "system", "content": f"Your last 20 trades within the last 7 days: {last_trades}"},
                     {
                         "role": "system",
                         "content": "price and indicators of bitcoin" + str(latest_indicators),

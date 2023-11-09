@@ -1,6 +1,5 @@
 import os
 import time
-import json
 
 from kucoin.client import Trade, User, Market
 from logger import log
@@ -46,6 +45,7 @@ class KucoinInterface:
 
     def get_last_trades(self, symbol="BTC-GBP", limit=20):
         # just look at first page for now as a limit
+        # NOTE: built in limit of up to 1 week old trades only
         data = self.trade_client.get_fill_list(tradeType="TRADE", symbol=symbol, pageSize=limit)
         cleaned = []
         for item in data["items"]:
