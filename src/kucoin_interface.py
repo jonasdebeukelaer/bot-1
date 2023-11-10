@@ -23,8 +23,14 @@ class KucoinInterface:
         # TODO: change to limit order when ready
         id = f"{str(time.time_ns())[:-5]}_{size}_{side}_{price}"
 
-        log(f"Executing trade: {id}")
-        self.trade_client.create_market_order(clientOid=id, symbol="BTC-GBP", side=side, size=size)
+        try:
+            log(f"Executing trade: {id}")
+            self.trade_client.create_market_order(clientOid=id, symbol="BTC-GBP", side=side, size=size)
+        except Exception as e:
+            if "200004" in e.args[0]:
+                log(f"Insufficient funds in kucoin to execute trade. attempted with {size} {side} at £{price}")
+            else:
+                raise e
 
     def get_portfolio_breakdown(self):
         data = self.user_client.get_account_list()
@@ -71,8 +77,10 @@ if __name__ == "__main__":
     load_dotenv()
     kucoin = KucoinInterface()
 
-    data = kucoin.get_portfolio_breakdown()
+    # insufficient funds buy
+    kucoin.execute_trade(100000000, "sell", 9000000)
 
+    data = kucoin.get_portfolio_breakdown()
     print(data)
 
     print("----------")
@@ -82,4 +90,3 @@ if __name__ == "__main__":
             print(symbol)
 
     trades = kucoin.get_last_trades("BTC-GBP")
-    # print(trades)
