@@ -134,6 +134,15 @@ class CryptoIndicators:
 
 
 if __name__ == "__main__":
+    from dotenv import load_dotenv
+
+    load_dotenv()
+
     crypto_indicators = CryptoIndicators()
     indicators = crypto_indicators.get_indicators()
+
+    print("indicators")
     print(indicators)
+
+    print("\nlatest indicators")
+    print(crypto_indicators.get_latest())

@@ -7,3 +7,4 @@ six~=1.16.0
 python-dotenv~=1.0.0
 pyopenssl~=23.2.0
 beautifulsoup4~=4.12.2
+gspread~=5.12.0

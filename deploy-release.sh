@@ -6,8 +6,8 @@ REGION="europe-west1"
 
 # Check if the user is logged in
 if [[ $(gcloud auth list --filter=status:ACTIVE --format="value(account)") == "" ]]; then
-    echo "You are not logged in to gcloud. Please run 'gcloud auth login' and try again."
-    exit 1
+    echo "You're not logged in. Doing that now..."
+    gcloud auth  application-default login --scopes="https://www.googleapis.com/auth/spreadsheets,https://www.googleapis.com/auth/drive,https://www.googleapis.com/auth/cloud-platform"
 fi
 
 gcloud config set project $PROJECT_ID
