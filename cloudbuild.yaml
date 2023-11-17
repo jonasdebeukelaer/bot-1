@@ -27,6 +27,6 @@ steps:
         --memory 2Gi \
         --min-instances 1 \
         --max-instances 1 \
-        --set-secrets /mnt2/secrets.env=crypto-gpt-env-secrets:5
+        --set-secrets /mnt2/secrets.env=crypto-gpt-env-secrets:6
 
 # TODO: rename secret to more relevant name

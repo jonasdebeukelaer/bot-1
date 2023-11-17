@@ -4,6 +4,7 @@ from kucoin_interface import KucoinInterface
 from crypto_indicators import CryptoIndicators
 from llm_market_monitor import MarketMonitor
 from llm_trader import Trader
+from decision_tracker import DecisionTracker
 
 
 class TradingStrategy:
@@ -12,6 +13,7 @@ class TradingStrategy:
         self.crypto_indictators = crypto_indictators
         self.market_monitor = MarketMonitor()
         self.trader = Trader()
+        self.decision_tracker = DecisionTracker()
 
     def execute(self):
         logger.reset_counter()
@@ -25,7 +27,8 @@ class TradingStrategy:
         last_trades = self.exchange_interface.get_last_trades()
 
         logger.log("Checking market...")
-        answer = self.market_monitor.check_market(self.crypto_indictators.get_latest(), portfolio_breakdown)
+        latest_crypto_indicators = self.crypto_indictators.get_latest()
+        answer = self.market_monitor.check_market(latest_crypto_indicators, portfolio_breakdown)
 
         log_msg = "Decided to call GPT4: {}. Reasoning: {}".format(answer["should_call"], answer["reasoning"])
         logger.log(log_msg)
@@ -43,6 +46,33 @@ class TradingStrategy:
                 trading_instructions["size"], trading_instructions["side"], trading_instructions["price"]
             )
 
+            # TODO: Add reason to decision tracker
+            # TODO: track all params of each trading round so easier to collect at the end
+            self.decision_tracker.record(
+                [
+                    "GBP-BTC",
+                    trading_instructions["size"],
+                    trading_instructions["price"],
+                    trading_instructions["side"],
+                    "<reason>",
+                ]
+            )
+
             logger.log("Made trade.")
+        else:
+            self.decision_tracker.record(["", 0, 0, 0, "no trade requested"])
+
+            logger.log("No trade requested.")
 
         logger.log("Finished execution\n")
+
+
+if __name__ == "__main__":
+    from dotenv import load_dotenv
+
+    load_dotenv()
+
+    ci = CryptoIndicators()
+    ci.get_indicators()
+    ts = TradingStrategy(KucoinInterface(), ci)
+    ts.execute()
