@@ -10,7 +10,7 @@ counter = 1
 
 def log(msg: Any) -> None:
     global counter
-    logging.info(f"{counter}: " + msg)
+    logging.info(f"{counter}: " + str(msg))
     counter += 1
 
 

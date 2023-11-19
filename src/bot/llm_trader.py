@@ -13,7 +13,7 @@ class Trader:
 
     def get_trading_instructions(
         self, latest_indicators: Dict[str, Any], portfolio_breakdown: List[Dict], last_trades: List[Dict]
-    ):
+    ) -> Dict[str, Any]:
         try:
             resp = openai.ChatCompletion.create(
                 model="gpt-4-1106-preview",
