@@ -20,7 +20,7 @@ class Trader:
                 messages=[
                     {
                         "role": "system",
-                        "content": "You are an extremely savvy trader. You have been trading bitcoin for years and have made a lot of money. Provide recommendations avoiding things like FOMO and FUD.",
+                        "content": "You are an advanced swing trader with a medium-high risk appetite. You've been trading Bitcoin and other cryptocurrencies, leveraging your expertise to capitalize on market trends while managing risks. Provide recommendations avoiding things like FOMO and FUD. You are requested to make a decision once an hour, so take this into account when making your decision.",
                     },
                     {"role": "system", "content": f"Your trading porfolio breakdown: {portfolio_breakdown}"},
                     {"role": "system", "content": f"Your last 20 trades within the last 7 days: {last_trades}"},
@@ -30,7 +30,7 @@ class Trader:
                     },
                     {
                         "role": "user",
-                        "content": "Given the price and indicators of bitcoin, what is your trading decision",
+                        "content": "Given the price and indicators of bitcoin, what is your trading decision?",
                     },
                 ],
                 functions=[
@@ -57,6 +57,10 @@ class Trader:
                                     "type": "string",
                                     "description": "The reasoning behind the trading decision.",
                                 },
+                                "data_request": {
+                                    "type": "string",
+                                    "description": "Specify any additional data which would help you make an optimal decision.",
+                                }
                             },
                             "required": ["size", "price", "side", "reasoning"],
                         },
