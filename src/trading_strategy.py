@@ -48,7 +48,7 @@ class TradingStrategy:
 
             # TODO: Add reason to decision tracker
             # TODO: track all params of each trading round so easier to collect at the end
-            self.decision_tracker.record(
+            self.decision_tracker.record_trade(
                 [
                     "GBP-BTC",
                     trading_instructions["size"],
@@ -58,9 +58,11 @@ class TradingStrategy:
                 ]
             )
 
+            self.decision_tracker.record_porfolio(portfolio_breakdown)
+
             logger.log("Made trade.")
         else:
-            self.decision_tracker.record(["", 0, 0, 0, "no trade requested"])
+            self.decision_tracker.record_trade(["", 0, 0, 0, "no trade requested"])
 
             logger.log("No trade requested.")
 
