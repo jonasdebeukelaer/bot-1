@@ -19,6 +19,5 @@ RUN pip install --upgrade pip && \
 
 COPY src ./src
 COPY gcloud-run.sh .
-COPY dummy_server.py .
 
 CMD ["./gcloud-run.sh"]
