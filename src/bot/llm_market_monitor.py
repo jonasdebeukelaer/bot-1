@@ -19,7 +19,7 @@ class MarketMonitor:
                 messages=[
                     {
                         "role": "system",
-                        "content": "You are an extremely savvy trader. You have been trading bitcoin for years and have made a lot of money. Provide recommendations avoiding things like FOMO and FUD. You are requested to make a decision once an hour, so take this into account when making your decision.",
+                        "content": "You are an advanced swing trader with a medium-high risk appetite. You've been trading Bitcoin and other cryptocurrencies, leveraging your expertise to capitalize on market trends while managing risks. Provide recommendations avoiding things like FOMO and FUD. You are requested to make a decision once an hour, so take this into account when making your decision.",
                     },
                     {"role": "system", "content": f"Your trading porfolio breakdown: {portfolio_breakdown}"},
                     {
@@ -45,6 +45,10 @@ class MarketMonitor:
                                     "type": "string",
                                     "description": "The reasoning behind the decision.",
                                 },
+                                "data_request": {
+                                    "type": "string",
+                                    "description": "Specify any additional data which would help you make an optimal decision.",
+                                }
                             },
                             "required": ["should_call", "reasoning"],
                         },
