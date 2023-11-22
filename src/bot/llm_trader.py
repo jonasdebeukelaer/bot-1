@@ -4,9 +4,13 @@ from typing import Dict, List, Any
 
 import openai
 
+from logger import log
+
 
 class Trader:
     def __init__(self):
+        self.model_name = os.environ.get("OPENAI_MODEL_NAME", "gpt-3.5-turbo-1106")
+
         openai.api_key = os.environ.get("OPENAI_API_KEY")
         if openai.api_key is None:
             raise ValueError("OPENAI_API_KEY is not set in the environment variables")
@@ -16,7 +20,7 @@ class Trader:
     ) -> Dict[str, Any]:
         try:
             resp = openai.ChatCompletion.create(
-                model="gpt-4-1106-preview",
+                model=self.model_name,
                 messages=[
                     {
                         "role": "system",
@@ -60,7 +64,7 @@ class Trader:
                                 "data_request": {
                                     "type": "string",
                                     "description": "Specify any additional data which would help you make an optimal decision.",
-                                }
+                                },
                             },
                             "required": ["size", "price", "side", "reasoning"],
                         },
@@ -69,20 +73,20 @@ class Trader:
                 function_call={"name": "decide_trade"},
             )
 
-            return json.loads(resp["choices"][0]["message"]["function_call"]["arguments"])
+            response_arguments = json.loads(resp["choices"][0]["message"]["function_call"]["arguments"])
+            if not isinstance(response_arguments, dict):
+                raise TypeError("The response from OpenAI API is not in the expected format.")
+            return response_arguments
 
         except KeyError as ke:
-            print(f"KeyError: {ke}")
+            log(f"KeyError during OpenAI API response parsing: {ke}")
             raise
-
         except ValueError as ve:
-            print(f"ValueError: {ve}")
+            log(f"ValueError during OpenAI API response parsing: {ve}")
             raise
-
         except openai.error.OpenAIError as oe:
-            print(f"OpenAIError: {oe}")
+            log(f"OpenAIError during API call: {oe}")
             raise
-
         except Exception as e:
-            print(f"An unexpected error occurred: {e}")
+            log(f"An unexpected error occurred during trading instructions retrieval: {e}")
             raise

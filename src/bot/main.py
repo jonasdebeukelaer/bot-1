@@ -29,7 +29,7 @@ def main():
 
     try:
         while True:
-            indicators_fetcher.get_indicators()
+            indicators_fetcher.fetch_indicators()
             trading_strategy.execute()
             time.sleep(ONE_HOUR)
     except KeyboardInterrupt:

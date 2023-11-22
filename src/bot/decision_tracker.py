@@ -15,10 +15,14 @@ class DecisionTracker:
 
         self.client = gspread.authorize(creds)
         self.trades_sheet = self.client.open(sheet_name).sheet1
-        self.porfolio_sheet = self.client.open(sheet_name).get_worksheet_by_id(1500161050)
+        self.portfolio_sheet = self.client.open(sheet_name).get_worksheet_by_id(1500161050)
 
     def record_trade(self, raw_trade_data: Union[Dict[str, Any], str]) -> None:
         dt = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+
+        required_keys = ["size", "price", "side", "reasoning"]
+        if not all(key in raw_trade_data for key in required_keys):
+            raise ValueError(f"Missing one or more required keys in trade data: {required_keys}")
 
         try:
             if isinstance(raw_trade_data, str) and raw_trade_data == "no trade":
@@ -40,11 +44,21 @@ class DecisionTracker:
                 # TODO: and here
                 raise ValueError("raw_trade_data must be a dict or 'no trade'")
         # TODO: fix try catching and raising confusion
-        except Exception as e:
-            log(f"ERROR: failed to record trade data to Google Sheet (trade data: {raw_trade_data}).")
-            log(e.args)
+        except gspread.exceptions.APIError as e:
+            log(f"ERROR: failed to record trade data to Google Sheet (trade data: {raw_trade_data}). {e}")
+        except ValueError as e:
+            log(f"ERROR: {e}")
 
     def record_porfolio(self, raw_account_data: List) -> None:
+        account_data = []
+        for x in raw_account_data:
+            if x["currency"] in ["GBP", "BTC", "USDT"]:
+                try:
+                    balance = float(x["balance"])
+                    if balance > 0:
+                        account_data.append(balance)
+                except ValueError:
+                    log(f"ERROR: Invalid balance format for currency {x['currency']}: {x['balance']}")
         try:
             dt = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
             account_data = [
@@ -52,10 +66,12 @@ class DecisionTracker:
                 for x in raw_account_data
                 if (float(x["balance"]) > 0 and x["currency"] in ["GBP", "BTC", "USDT"])
             ]
-            self.porfolio_sheet.append_row([dt] + account_data)
-        except Exception as e:
-            log(f"ERROR: failed to record account data to Google Sheet (account data: {account_data}).")
-            log(e.args)
+            self.portfolio_sheet.append_row([dt] + account_data)
+
+        except gspread.exceptions.APIError as e:
+            log(f"ERROR: failed to record account data to Google Sheet (account data: {raw_account_data}). {e}")
+        except ValueError as e:
+            log(f"ERROR: {e}")
 
 
 if __name__ == "__main__":
@@ -71,10 +87,10 @@ if __name__ == "__main__":
     dt.record_trade(trade_data)
     dt.record_trade("no trade")
 
-    raw_porfolio_data = [
+    raw_portfolio_data = [
         {"currency": "GBP", "balance": "1.62"},
         {"currency": "BTC", "balance": "0.00000001"},
         {"currency": "USDT", "balance": "0.00000002"},
         {"currency": "GBP", "balance": "0"},  # included in response, but gets ignored in here
     ]
-    dt.record_porfolio(raw_porfolio_data)
+    dt.record_portfolio(raw_portfolio_data)
