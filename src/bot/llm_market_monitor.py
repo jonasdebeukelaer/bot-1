@@ -4,9 +4,13 @@ from typing import Dict, Any, List
 
 import openai
 
+from logger import log
+
 
 class MarketMonitor:
     def __init__(self):
+        self.model_name = os.environ.get("OPENAI_MODEL_NAME", "gpt-3.5-turbo-1106")
+
         openai.api_key = os.environ.get("OPENAI_API_KEY")
         if openai.api_key is None:
             raise ValueError("OPENAI_API_KEY is not set in the environment variables")
@@ -15,7 +19,7 @@ class MarketMonitor:
         try:
             # Call GPT3 with indicators to decide if we should call GPT4
             resp = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo-1106",
+                model=self.model_name,
                 messages=[
                     {
                         "role": "system",
@@ -48,7 +52,7 @@ class MarketMonitor:
                                 "data_request": {
                                     "type": "string",
                                     "description": "Specify any additional data which would help you make an optimal decision.",
-                                }
+                                },
                             },
                             "required": ["should_call", "reasoning"],
                         },
@@ -57,26 +61,20 @@ class MarketMonitor:
                 function_call={"name": "should_call_gpt4"},
             )
 
-            return json.loads(resp["choices"][0]["message"]["function_call"]["arguments"])
+            response_arguments = json.loads(resp["choices"][0]["message"]["function_call"]["arguments"])
+            if not isinstance(response_arguments, dict):
+                raise TypeError("The response from OpenAI API is not in the expected format.")
+            return response_arguments
 
         except KeyError as ke:
-            print(f"KeyError: {ke}")
-            # Handle KeyError, maybe log it and/or re-raise as a more specific exception
+            log(f"KeyError during OpenAI API response parsing: {ke}")
             raise
-
         except ValueError as ve:
-            print(f"ValueError: {ve}")
-            # Handle ValueError, maybe log it and/or re-raise as a more specific exception
+            log(f"ValueError during OpenAI API response parsing: {ve}")
             raise
-
         except openai.error.OpenAIError as oe:
-            print(f"OpenAIError: {oe}")
-            # Handle OpenAI API-related errors
-            # Log it and/or re-raise as needed
+            log(f"OpenAIError during API call: {oe}")
             raise
-
         except Exception as e:
-            print(f"An unexpected error occurred: {e}")
-            # Handle other types of exceptions
-            # Log it and/or re-raise as needed
+            log(f"An unexpected error occurred during market check: {e}")
             raise

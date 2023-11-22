@@ -8,9 +8,18 @@ from logger import log
 class KucoinInterface:
     def __init__(self):
         API_KEY = os.environ.get("KUCOIN_API_KEY")
+        if not API_KEY:
+            raise EnvironmentError("The KUCOIN_API_KEY environment variable is not set.")
         API_SECRET = os.environ.get("KUCOIN_API_SECRET")
+        if not API_SECRET:
+            raise EnvironmentError("The KUCOIN_API_SECRET environment variable is not set.")
         API_PASSPHRASE = os.environ.get("KUCOIN_API_PASSPHRASE")
+        if not API_PASSPHRASE:
+            raise EnvironmentError("The KUCOIN_API_PASSPHRASE environment variable is not set.")
         URL = os.environ.get("KUCOIN_URL")
+        if not URL:
+            raise EnvironmentError("The KUCOIN_URL environment variable is not set.")
+
         self.trade_client = Trade(key=API_KEY, secret=API_SECRET, passphrase=API_PASSPHRASE, url=URL)
         self.user_client = User(key=API_KEY, secret=API_SECRET, passphrase=API_PASSPHRASE, url=URL)
         self.market_client = Market(key=API_KEY, secret=API_SECRET, passphrase=API_PASSPHRASE, url=URL)

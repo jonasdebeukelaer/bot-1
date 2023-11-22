@@ -8,9 +8,9 @@ from decision_tracker import DecisionTracker
 
 
 class TradingStrategy:
-    def __init__(self, exchange_interface: KucoinInterface, crypto_indictators: CryptoIndicators):
+    def __init__(self, exchange_interface: KucoinInterface, crypto_indicators: CryptoIndicators):
         self.exchange_interface = exchange_interface
-        self.crypto_indictators = crypto_indictators
+        self.crypto_indicators = crypto_indicators
         self.market_monitor = MarketMonitor()
         self.trader = Trader()
         self.decision_tracker = DecisionTracker()
@@ -27,7 +27,7 @@ class TradingStrategy:
         last_trades = self.exchange_interface.get_last_trades()
 
         logger.log("Checking market...")
-        latest_crypto_indicators = self.crypto_indictators.get_latest()
+        latest_crypto_indicators = self.crypto_indicators.get_latest()
         answer = self.market_monitor.check_market(latest_crypto_indicators, portfolio_breakdown)
 
         log_msg = "Decided to call GPT4: {}. Reasoning: {}".format(answer["should_call"], answer["reasoning"])
@@ -36,7 +36,7 @@ class TradingStrategy:
         if answer["should_call"]:
             logger.log("Calling GPT4 for trading decision...")
             trading_instructions = self.trader.get_trading_instructions(
-                self.crypto_indictators.indicator_history, portfolio_breakdown, last_trades
+                self.crypto_indicators.indicator_history, portfolio_breakdown, last_trades
             )
 
             log_msg = "Made trade decision. Trade instructions: {}".format(trading_instructions)
@@ -65,6 +65,6 @@ if __name__ == "__main__":
     load_dotenv()
 
     ci = CryptoIndicators()
-    ci.get_indicators()
+    ci.fetch_indicators()
     ts = TradingStrategy(KucoinInterface(), ci)
     ts.execute()

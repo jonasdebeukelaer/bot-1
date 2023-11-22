@@ -1,24 +1,25 @@
 import os
 import requests
-from typing import Dict, Any
-import urllib3
-
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+from collections import deque
+from typing import Any, Dict
 
 INSTANTANEOUS_RESULT_COUNT = 1
-MAX_INDICTAOR_HISTORY = 20
+MAX_INDICATOR_HISTORY = 20
 
 
 class CryptoIndicators:
     def __init__(self, symbol: str = "BTC/USDT", exchange: str = "binance", interval: str = "4h"):
+        if not os.environ.get("TAAPI_API_KEY"):
+            raise EnvironmentError("The TAAPI_API_KEY environment variable is not set.")
+
         self.taapi_api_key = os.environ.get("TAAPI_API_KEY")
         self.symbol = symbol
         self.exchange = exchange
         self.interval = interval
 
-        self.indicator_history = []
+        self.indicator_history = deque([], maxlen=MAX_INDICATOR_HISTORY)
 
-    def get_taapi_indicators(self):
+    def get_taapi_indicators(self) -> Any:
         # Define the construct
         construct = {
             "exchange": self.exchange,
@@ -90,7 +91,7 @@ class CryptoIndicators:
 
         return {"fear/greed index": values}
 
-    def get_indicators(self) -> None:
+    def fetch_indicators(self) -> None:
         # Get taapi indicators
         taapi_results = self.get_taapi_indicators()
 
@@ -125,24 +126,18 @@ class CryptoIndicators:
 
         self.indicator_history.append(indicators)
 
-        # if indictor history too long, remove the oldest entry
-        if len(self.indicator_history) > MAX_INDICTAOR_HISTORY:
-            self.indicator_history.pop(0)
 
     def get_latest(self) -> Dict[str, Any]:
-        return self.indicator_history[-1]
+        if self.indicator_history:
+            return self.indicator_history[-1]
+        else:
+            return {}
 
 
 if __name__ == "__main__":
     from dotenv import load_dotenv
 
     load_dotenv()
-
     crypto_indicators = CryptoIndicators()
-    indicators = crypto_indicators.get_indicators()
-
-    print("indicators")
-    print(indicators)
-
-    print("\nlatest indicators")
-    print(crypto_indicators.get_latest())
+    crypto_indicators.fetch_indicators()
+    print("Indicators:", crypto_indicators.get_latest())
