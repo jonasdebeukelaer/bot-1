@@ -4,7 +4,7 @@ from typing import List, Dict, Any, Union
 import gspread
 from google.auth import default
 
-from logger import log
+from logger import logger
 
 
 class DecisionTracker:
@@ -45,9 +45,9 @@ class DecisionTracker:
                 raise ValueError("raw_trade_data must be a dict or 'no trade'")
         # TODO: fix try catching and raising confusion
         except gspread.exceptions.APIError as e:
-            log(f"ERROR: failed to record trade data to Google Sheet (trade data: {raw_trade_data}). {e}")
+            logger.log_error(f"ERROR: failed to record trade data to Google Sheet (trade data: {raw_trade_data}). {e}")
         except ValueError as e:
-            log(f"ERROR: {e}")
+            logger.log_error(f"ERROR: {e}")
 
     def record_porfolio(self, raw_account_data: List) -> None:
         account_data = []
@@ -58,7 +58,7 @@ class DecisionTracker:
                     if balance > 0:
                         account_data.append(balance)
                 except ValueError:
-                    log(f"ERROR: Invalid balance format for currency {x['currency']}: {x['balance']}")
+                    logger.log_error(f"ERROR: Invalid balance format for currency {x['currency']}: {x['balance']}")
         try:
             dt = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
             account_data = [
@@ -69,9 +69,9 @@ class DecisionTracker:
             self.portfolio_sheet.append_row([dt] + account_data)
 
         except gspread.exceptions.APIError as e:
-            log(f"ERROR: failed to record account data to Google Sheet (account data: {raw_account_data}). {e}")
+            logger.log_error(f"ERROR: failed to record account data to Google Sheet (account data: {raw_account_data}). {e}")
         except ValueError as e:
-            log(f"ERROR: {e}")
+            logger.log_error(f"ERROR: {e}")
 
 
 if __name__ == "__main__":

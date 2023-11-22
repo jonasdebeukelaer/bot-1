@@ -3,6 +3,8 @@ import requests
 from collections import deque
 from typing import Any, Dict
 
+from logger import logger
+
 INSTANTANEOUS_RESULT_COUNT = 1
 MAX_INDICATOR_HISTORY = 20
 
@@ -72,7 +74,7 @@ class CryptoIndicators:
         if response.status_code == 200:
             return response.json()["data"]
         else:
-            print(response.text)
+            logger.log_info(response.text)
             response.raise_for_status()
 
     def get_alternative_me_indicators(self):
@@ -140,4 +142,4 @@ if __name__ == "__main__":
     load_dotenv()
     crypto_indicators = CryptoIndicators()
     crypto_indicators.fetch_indicators()
-    print("Indicators:", crypto_indicators.get_latest())
+    logger.log_info("Indicators:", crypto_indicators.get_latest())

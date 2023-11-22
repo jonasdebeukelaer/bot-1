@@ -4,7 +4,7 @@ from typing import Dict, Any, List
 
 import openai
 
-from logger import log
+from logger import logger
 
 
 class MarketMonitor:
@@ -67,14 +67,14 @@ class MarketMonitor:
             return response_arguments
 
         except KeyError as ke:
-            log(f"KeyError during OpenAI API response parsing: {ke}")
+            logger.log_error(f"KeyError during OpenAI API response parsing: {ke}")
             raise
         except ValueError as ve:
-            log(f"ValueError during OpenAI API response parsing: {ve}")
+            logger.log_error(f"ValueError during OpenAI API response parsing: {ve}")
             raise
         except openai.error.OpenAIError as oe:
-            log(f"OpenAIError during API call: {oe}")
+            logger.log_error(f"OpenAIError during API call: {oe}")
             raise
         except Exception as e:
-            log(f"An unexpected error occurred during market check: {e}")
+            logger.log_error(f"An unexpected error occurred during market check: {e}")
             raise

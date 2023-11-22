@@ -7,7 +7,6 @@ from dotenv import load_dotenv
 
 from trading_strategy import TradingStrategy
 from crypto_indicators import CryptoIndicators
-from logging import log
 
 ONE_HOUR = 3600
 
