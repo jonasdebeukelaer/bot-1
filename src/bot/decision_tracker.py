@@ -50,26 +50,23 @@ class DecisionTracker:
             logger.log_error(f"ERROR: {e}")
 
     def record_porfolio(self, raw_account_data: List) -> None:
+        dt = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+
         account_data = []
         for x in raw_account_data:
             if x["currency"] in ["GBP", "BTC", "USDT"]:
                 try:
-                    balance = float(x["balance"])
+                    balance = float(x["available"])
                     if balance > 0:
                         account_data.append(balance)
                 except ValueError:
-                    logger.log_error(f"ERROR: Invalid balance format for currency {x['currency']}: {x['balance']}")
+                    logger.log_error(f"ERROR: Invalid balance format for currency {x['currency']}: {x['available']}")
+
         try:
-            dt = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-            account_data = [
-                float(x["balance"])
-                for x in raw_account_data
-                if (float(x["balance"]) > 0 and x["currency"] in ["GBP", "BTC", "USDT"])
-            ]
             self.portfolio_sheet.append_row([dt] + account_data)
 
         except gspread.exceptions.APIError as e:
-            logger.log_error(f"ERROR: failed to record account data to Google Sheet (account data: {raw_account_data}). {e}")
+            logger.log_error(f"ERROR: failed to record account data to Google Sheet (data: {raw_account_data}). {e}")
         except ValueError as e:
             logger.log_error(f"ERROR: {e}")
 
