@@ -1,5 +1,4 @@
-import logger
-
+from logger import logger
 from kucoin_interface import KucoinInterface
 from crypto_indicators import CryptoIndicators
 from llm_market_monitor import MarketMonitor
@@ -18,29 +17,29 @@ class TradingStrategy:
     def execute(self):
         logger.reset_counter()
 
-        logger.log("Starting new trading strategy execution...")
+        logger.log_info("Starting new trading strategy execution...")
 
-        logger.log("Getting portfolio breakdown...")
+        logger.log_info("Getting portfolio breakdown...")
         portfolio_breakdown = self.exchange_interface.get_portfolio_breakdown()
 
-        logger.log("Getting last trades...")
+        logger.log_info("Getting last trades...")
         last_trades = self.exchange_interface.get_last_trades()
 
-        logger.log("Checking market...")
+        logger.log_info("Checking market...")
         latest_crypto_indicators = self.crypto_indicators.get_latest()
         answer = self.market_monitor.check_market(latest_crypto_indicators, portfolio_breakdown)
 
         log_msg = "Decided to call GPT4: {}. Reasoning: {}".format(answer["should_call"], answer["reasoning"])
-        logger.log(log_msg)
+        logger.log_info(log_msg)
 
         if answer["should_call"]:
-            logger.log("Calling GPT4 for trading decision...")
+            logger.log_info("Calling GPT4 for trading decision...")
             trading_instructions = self.trader.get_trading_instructions(
                 self.crypto_indicators.indicator_history, portfolio_breakdown, last_trades
             )
 
             log_msg = "Made trade decision. Trade instructions: {}".format(trading_instructions)
-            logger.log(log_msg)
+            logger.log_info(log_msg)
 
             self.exchange_interface.execute_trade(
                 trading_instructions["size"], trading_instructions["side"], trading_instructions["price"]
@@ -50,13 +49,13 @@ class TradingStrategy:
             self.decision_tracker.record_trade(trading_instructions)
             self.decision_tracker.record_porfolio(portfolio_breakdown)
 
-            logger.log("Made trade.")
+            logger.log_info("Made trade.")
         else:
             self.decision_tracker.record_trade("no trade")
 
-            logger.log("No trade requested.")
+            logger.log_info("No trade requested.")
 
-        logger.log("Finished execution\n")
+        logger.log_info("Finished execution\n")
 
 
 if __name__ == "__main__":

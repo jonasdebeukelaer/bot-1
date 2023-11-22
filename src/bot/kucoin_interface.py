@@ -2,7 +2,7 @@ import os
 import time
 
 from kucoin.client import Trade, User, Market
-from logger import log
+from logger import logger
 
 
 class KucoinInterface:
@@ -26,18 +26,18 @@ class KucoinInterface:
 
     def execute_trade(self, size, side, price):
         if size == 0:
-            log("No trade wanted (trade size = 0)")
+            logger.log_info("No trade wanted (trade size = 0)")
             return
 
         # TODO: change to limit order when ready
         id = f"{str(time.time_ns())[:-5]}_{size}_{side}_{price}"
 
         try:
-            log(f"Executing trade: {id}")
+            logger.log_info(f"Executing trade: {id}")
             self.trade_client.create_market_order(clientOid=id, symbol="BTC-GBP", side=side, size=size)
         except Exception as e:
             if "200004" in e.args[0]:
-                log(f"Insufficient funds in kucoin to execute trade. attempted with {size} {side} at £{price}")
+                logger.log_error(f"Insufficient funds in kucoin to execute trade. attempted with {size} {side} at £{price}")
             else:
                 raise e
 
@@ -55,7 +55,7 @@ class KucoinInterface:
 
             output.append(new_entry)
 
-        log(f"Portfolio breakdown: {output}")
+        logger.log_info(f"Portfolio breakdown: {output}")
         return output
 
     def get_last_trades(self, symbol="BTC-GBP", limit=20):
@@ -75,7 +75,7 @@ class KucoinInterface:
                 }
             )
 
-        log(f"Last {limit} trades: {cleaned}")
+        logger.log_info(f"Last {limit} trades: {cleaned}")
         return data["items"]
 
 
