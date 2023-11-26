@@ -93,8 +93,13 @@ class CryptoIndicators:
 
         return {"fear/greed index": values}
 
+    def format_value(self, val: Any) -> str:
+        if isinstance(val, (float, int)) or (isinstance(val, str) and val.replace(".", "", 1).isdigit()):
+            return f"{float(val):.5g}"
+        else:
+            return val
+
     def fetch_indicators(self) -> None:
-        # Get taapi indicators
         taapi_results = self.get_taapi_indicators()
 
         # Parse and return the taapi_results
@@ -102,19 +107,14 @@ class CryptoIndicators:
         for result in taapi_results:
             indicator_name = result["id"]
 
-            # TODO: not working rn
             formatted_results = {}
             for key, value in result["result"].items():
-                if (
-                    isinstance(value, float)
-                    or isinstance(value, int)
-                    or (isinstance(value, str) and value.replace(".", "", 1).isdigit())
-                ):
-                    formatted_results[key] = f"{float(value):.5g}"
+                if isinstance(value, list):
+                    formatted_results[key] = [self.format_value(v) for v in value]
                 else:
-                    formatted_results[key] = value
+                    formatted_results[key] = self.format_value(value)
 
-            if "value" in result["result"]:
+            if "value" in formatted_results:
                 indicator_value = formatted_results["value"]
             else:
                 indicator_value = formatted_results
@@ -142,4 +142,4 @@ if __name__ == "__main__":
     load_dotenv()
     crypto_indicators = CryptoIndicators()
     crypto_indicators.fetch_indicators()
-    logger.log_info("Indicators:", crypto_indicators.get_latest())
+    logger.log_info(f"Indicators: {crypto_indicators.get_latest()}")
