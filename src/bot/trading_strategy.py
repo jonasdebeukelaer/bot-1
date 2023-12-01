@@ -25,6 +25,9 @@ class TradingStrategy:
         logger.log_info("Getting last trades...")
         last_trades = self.exchange_interface.get_last_trades()
 
+        logger.log_info("Getting order book...")
+        order_book = self.exchange_interface.get_part_order_book()
+
         logger.log_info("Checking market...")
         latest_crypto_indicators = self.crypto_indicators.get_latest()
         answer = self.market_monitor.check_market(latest_crypto_indicators, portfolio_breakdown)
@@ -35,7 +38,7 @@ class TradingStrategy:
         if answer["should_call"]:
             logger.log_info("Calling GPT4 for trading decision...")
             trading_instructions = self.trader.get_trading_instructions(
-                self.crypto_indicators.indicator_history, portfolio_breakdown, last_trades
+                self.crypto_indicators.indicator_history, portfolio_breakdown, last_trades, order_book
             )
 
             log_msg = "Made trade decision. Trade instructions: {}".format(trading_instructions)

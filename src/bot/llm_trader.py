@@ -7,7 +7,7 @@ from llm_interface import LLMInterface
 
 class Trader(LLMInterface):
     def get_trading_instructions(
-        self, latest_indicators: Dict[str, Any], portfolio_breakdown: List[Dict], last_trades: List[Dict]
+        self, latest_indicators: Dict[str, Any], portfolio_breakdown: List[Dict], last_trades: List[Dict], order_book: Dict[str, Any]
     ) -> Dict[str, Any]:
         messages = [
             {
@@ -16,7 +16,7 @@ class Trader(LLMInterface):
             },
             {
                 "role": "user",
-                "content": f"Your trading porfolio breakdown: {portfolio_breakdown} \n\n Your last 20 trades within the last 7 days: {last_trades} \n\nprice and indicators of bitcoin: {str(latest_indicators)} \n\nGiven your portfolio, the price and indicators history of bitcoin provided and your last trades, what is your trading decision?",
+                "content": f"Your trading porfolio breakdown: {portfolio_breakdown} \n\n Your last 20 trades within the last 7 days: {last_trades} \n\nprice and indicators of bitcoin: {str(latest_indicators)} \n\nkucoin order book (20 pieces): {order_book} \n\nGiven your portfolio, the price and indicators history of bitcoin provided and your last trades, what is your trading decision?",
             },
         ]
 
