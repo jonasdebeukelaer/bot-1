@@ -7,7 +7,11 @@ from llm_interface import LLMInterface
 
 class Trader(LLMInterface):
     def get_trading_instructions(
-        self, latest_indicators: Dict[str, Any], portfolio_breakdown: List[Dict], last_trades: List[Dict], order_book: Dict[str, Any]
+        self,
+        latest_indicators: Dict[str, Any],
+        portfolio_breakdown: List[Dict],
+        last_trades: List[Dict],
+        order_book: Dict[str, Any],
     ) -> Dict[str, Any]:
         messages = [
             {
