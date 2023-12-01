@@ -2,25 +2,23 @@ import os
 import json
 from typing import Dict, List, Any
 
-from bot.llm_interface import LLMInterface
+from llm_interface import LLMInterface
 
 
 class Trader(LLMInterface):
     def get_trading_instructions(
         self, latest_indicators: Dict[str, Any], portfolio_breakdown: List[Dict], last_trades: List[Dict]
     ) -> Dict[str, Any]:
-        messages = (
-            [
-                {
-                    "role": "system",
-                    "content": "You are an advanced swing trader with a medium-high risk appetite. You've been trading Bitcoin and other cryptocurrencies, leveraging your expertise to capitalize on market trends while managing risks. Provide recommendations avoiding things like FOMO and FUD. You are requested to make a decision once an hour, so take this into account when making your decision.",
-                },
-                {
-                    "role": "user",
-                    "content": f"Your trading porfolio breakdown: {portfolio_breakdown} \n\n Your last 20 trades within the last 7 days: {last_trades} \n\nprice and indicators of bitcoin: {str(latest_indicators)} \n\nGiven your portfolio, the price and indicators history of bitcoin provided and your last trades, what is your trading decision?",
-                },
-            ],
-        )
+        messages = [
+            {
+                "role": "system",
+                "content": "You are an advanced swing trader with a medium-high risk appetite. You've been trading Bitcoin and other cryptocurrencies, leveraging your expertise to capitalize on market trends while managing risks. Provide recommendations avoiding things like FOMO and FUD. You are requested to make a decision once an hour, so take this into account when making your decision.",
+            },
+            {
+                "role": "user",
+                "content": f"Your trading porfolio breakdown: {portfolio_breakdown} \n\n Your last 20 trades within the last 7 days: {last_trades} \n\nprice and indicators of bitcoin: {str(latest_indicators)} \n\nGiven your portfolio, the price and indicators history of bitcoin provided and your last trades, what is your trading decision?",
+            },
+        ]
 
         function = {
             "name": "decide_trade",
