@@ -37,7 +37,9 @@ class KucoinInterface:
             self.trade_client.create_market_order(clientOid=id, symbol="BTC-GBP", side=side, size=size)
         except Exception as e:
             if "200004" in e.args[0]:
-                logger.log_error(f"Insufficient funds in kucoin to execute trade. attempted with {size} {side} at £{price}")
+                logger.log_error(
+                    f"Insufficient funds in kucoin to execute trade. attempted with {size} {side} at £{price}"
+                )
             else:
                 raise e
 
@@ -78,6 +80,11 @@ class KucoinInterface:
         logger.log_info(f"Last {limit} trades: {cleaned}")
         return data["items"]
 
+    def get_part_order_book(self, symbol="BTC-GBP", pieces=20):
+        data = self.market_client.get_part_order(symbol=symbol, pieces=pieces)
+        logger.log_info(f"Order book for {symbol}: {data}")
+        return data
+
 
 # test
 if __name__ == "__main__":
@@ -86,16 +93,19 @@ if __name__ == "__main__":
     load_dotenv()
     kucoin = KucoinInterface()
 
-    # insufficient funds buy
-    kucoin.execute_trade(100000000, "sell", 9000000)
+    # # insufficient funds buy
+    # kucoin.execute_trade(100000000, "sell", 9000000)
 
-    data = kucoin.get_portfolio_breakdown()
-    print(data)
+    # data = kucoin.get_portfolio_breakdown()
+    # print(data)
+
+    # print("----------")
+    # symbols = kucoin.market_client.get_symbol_list_v2()
+    # for symbol in symbols:
+    #     if symbol["symbol"] == "BTC-GBP":
+    #         print(symbol)
+
+    # trades = kucoin.get_last_trades("BTC-GBP")
 
     print("----------")
-    symbols = kucoin.market_client.get_symbol_list_v2()
-    for symbol in symbols:
-        if symbol["symbol"] == "BTC-GBP":
-            print(symbol)
-
-    trades = kucoin.get_last_trades("BTC-GBP")
+    kucoin.get_part_order_book("BTC-GBP")
