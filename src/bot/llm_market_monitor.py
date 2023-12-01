@@ -1,6 +1,6 @@
 from typing import Dict, Any, List
 
-from bot.llm_interface import LLMInterface
+from llm_interface import LLMInterface
 
 
 class MarketMonitor(LLMInterface):
@@ -37,4 +37,4 @@ class MarketMonitor(LLMInterface):
             },
         }
 
-        return self.send_message(messages, function)
+        return self.send_messages(messages, function)
