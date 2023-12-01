@@ -128,7 +128,6 @@ class CryptoIndicators:
 
         self.indicator_history.append(indicators)
 
-
     def get_latest(self) -> Dict[str, Any]:
         if self.indicator_history:
             return self.indicator_history[-1]
