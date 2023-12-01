@@ -78,7 +78,7 @@ class KucoinInterface:
             )
 
         logger.log_info(f"Last {limit} trades: {cleaned}")
-        return data["items"]
+        return cleaned
 
     def get_part_order_book(self, symbol="BTC-GBP", pieces=20):
         data = self.market_client.get_part_order(symbol=symbol, pieces=pieces)
@@ -105,7 +105,7 @@ if __name__ == "__main__":
     #     if symbol["symbol"] == "BTC-GBP":
     #         print(symbol)
 
-    # trades = kucoin.get_last_trades("BTC-GBP")
+    trades = kucoin.get_last_trades("BTC-GBP")
 
     print("----------")
     kucoin.get_part_order_book("BTC-GBP")
