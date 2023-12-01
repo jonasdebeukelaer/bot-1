@@ -62,6 +62,12 @@ class CryptoIndicators:
                     "results": INSTANTANEOUS_RESULT_COUNT,
                     "addResultTimestamp": False,
                 },
+                {
+                    "id": "MACD",
+                    "indicator": "macd",
+                    "exchange": "binance",
+                    "results": INSTANTANEOUS_RESULT_COUNT,
+                },
             ],
         }
 
