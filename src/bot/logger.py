@@ -1,6 +1,7 @@
 import logging
 from typing import Any
 
+
 class Logger:
     def __init__(self, filename: str = "bot.log"):
         self.counter = 1
@@ -20,5 +21,6 @@ class Logger:
 
     def reset_counter(self) -> None:
         self.counter = 1
+
 
 logger = Logger("bot.log")
