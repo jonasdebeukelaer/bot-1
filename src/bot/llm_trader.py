@@ -49,7 +49,7 @@ class Trader(LLMInterface):
                     },
                     "data_request": {
                         "type": "string",
-                        "description": "Specify any additional data which would help you make an optimal decision.",
+                        "description": "Specify any additional data which would have helped you make a better decision.",
                     },
                 },
                 "required": ["size", "price", "side", "reasoning"],
