@@ -50,10 +50,10 @@ class KucoinInterface:
         for entry in data:
             if entry["currency"] not in ["GBP", "USDT", "BTC"]:
                 continue
+            elif entry["balance"] == "0" or entry["available"] == "0":
+                continue
 
-            new_entry = entry
-            del new_entry["id"]
-            del new_entry["type"]
+            new_entry = {"currency": entry["currency"], "available": entry["available"]}
 
             output.append(new_entry)
 
