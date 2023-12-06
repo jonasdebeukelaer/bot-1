@@ -11,6 +11,10 @@ class Logger:
         logging.basicConfig(filename=filename, level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
         logging.getLogger().addHandler(logging.StreamHandler())
 
+    def log_debug(self, msg: Any) -> None:
+        logging.debug(f"{self.counter}: {msg}")
+        self.counter += 1
+
     def log_info(self, msg: Any) -> None:
         logging.info(f"{self.counter}: {msg}")
         self.counter += 1
