@@ -16,6 +16,7 @@ class LLMInterface:
             raise ValueError("OPENAI_API_KEY is not set in the environment variables")
 
     def send_messages(self, messages: List[Dict], function: Dict) -> Dict[str, Any]:
+        logger.log_debug(f"Sending messages to OpenAI API: {messages}")
         try:
             resp = openai.ChatCompletion.create(
                 model=self.model_name,
