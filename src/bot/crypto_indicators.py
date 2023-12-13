@@ -4,6 +4,7 @@ from collections import deque
 from typing import Any, Dict
 
 from logger import logger
+from util import format_value
 
 INSTANTANEOUS_RESULT_COUNT = 1
 MAX_INDICATOR_HISTORY = 20
@@ -99,12 +100,6 @@ class CryptoIndicators:
 
         return {"fear/greed index": values}
 
-    def format_value(self, val: Any) -> str:
-        if isinstance(val, (float, int)) or (isinstance(val, str) and val.replace(".", "", 1).isdigit()):
-            return f"{float(val):.5g}"
-        else:
-            return val
-
     def fetch_indicators(self) -> None:
         taapi_results = self.get_taapi_indicators()
 
@@ -116,9 +111,9 @@ class CryptoIndicators:
             formatted_results = {}
             for key, value in result["result"].items():
                 if isinstance(value, list):
-                    formatted_results[key] = [self.format_value(v) for v in value]
+                    formatted_results[key] = [format_value(v) for v in value]
                 else:
-                    formatted_results[key] = self.format_value(value)
+                    formatted_results[key] = format_value(value)
 
             if "value" in formatted_results:
                 indicator_value = formatted_results["value"]
