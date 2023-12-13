@@ -3,6 +3,7 @@ import time
 
 from kucoin.client import Trade, User, Market
 from logger import logger
+from util import format_value
 
 
 class KucoinInterface:
@@ -70,9 +71,9 @@ class KucoinInterface:
                 {
                     "symbol": item["symbol"],
                     "side": item["side"],
-                    "price": item["price"],
+                    "price": format_value(item["price"]),
                     "size": item["size"],
-                    "fee": f'{item["fee"]} {item["feeCurrency"]}',
+                    "fee": f'{format_value(item["fee"])} {item["feeCurrency"]}',
                     "createdAt": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(item["createdAt"] / 1000)),
                 }
             )
@@ -96,17 +97,17 @@ if __name__ == "__main__":
     load_dotenv()
     kucoin = KucoinInterface()
 
-    # # insufficient funds buy
-    # kucoin.execute_trade(100000000, "sell", 9000000)
+    # insufficient funds buy
+    kucoin.execute_trade(100000000, "sell", 9000000)
 
-    # data = kucoin.get_portfolio_breakdown()
-    # print(data)
+    data = kucoin.get_portfolio_breakdown()
+    print(data)
 
-    # print("----------")
-    # symbols = kucoin.market_client.get_symbol_list_v2()
-    # for symbol in symbols:
-    #     if symbol["symbol"] == "BTC-GBP":
-    #         print(symbol)
+    print("----------")
+    symbols = kucoin.market_client.get_symbol_list_v2()
+    for symbol in symbols:
+        if symbol["symbol"] == "BTC-GBP":
+            print(symbol)
 
     print("----------")
     trades = kucoin.get_last_trades("BTC-GBP")
