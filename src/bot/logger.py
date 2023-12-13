@@ -1,3 +1,4 @@
+import os
 import logging
 from typing import Any
 
@@ -8,7 +9,9 @@ class Logger:
         self.setup_logger(filename)
 
     def setup_logger(self, filename: str) -> None:
-        logging.basicConfig(filename=filename, level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+        level = logging.DEBUG if os.environ.get("DEBUG", "false") == "true" else logging.INFO
+
+        logging.basicConfig(filename=filename, level=level, format="%(asctime)s - %(levelname)s - %(message)s")
         logging.getLogger().addHandler(logging.StreamHandler())
 
     def log_debug(self, msg: Any) -> None:
