@@ -66,7 +66,6 @@ if __name__ == "__main__":
     from dotenv import load_dotenv
 
     load_dotenv()
-    logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s")
 
     ci = CryptoIndicators()
     ci.fetch_indicators()
