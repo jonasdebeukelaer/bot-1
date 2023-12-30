@@ -1,5 +1,3 @@
-import os
-import json
 from typing import Dict, List, Any
 
 from llm_interface import LLMInterface
@@ -8,7 +6,8 @@ from llm_interface import LLMInterface
 class Trader(LLMInterface):
     def get_trading_instructions(
         self,
-        latest_indicators: str,
+        indicator_history_hourly: str,
+        indicator_history_daily: str,
         portfolio_breakdown: List[Dict],
         last_trades: List[str],
         order_book: Dict[str, Any],
@@ -20,7 +19,7 @@ class Trader(LLMInterface):
             },
             {
                 "role": "user",
-                "content": f"Your trading porfolio breakdown: {portfolio_breakdown} \n\n Your last 20 trades within the last 7 days: {last_trades} \n\nprice and indicators of bitcoin: {latest_indicators} \n\nkucoin order book (20 pieces): {order_book} \n\nGiven your portfolio, the price and indicators history of bitcoin provided and your last trades, what is your trading decision?",
+                "content": f"Your trading porfolio breakdown: {portfolio_breakdown} \n\n Your last 20 trades within the last 7 days: {last_trades} \n\nhourly price and indicators of bitcoin: {indicator_history_hourly} \n\ndaily price and indicators of bitcoin: {indicator_history_daily} \n\nkucoin order book (20 pieces): {order_book} \n\nGiven your portfolio, the price and indicators history of bitcoin provided and your last trades, what is your trading decision?",
             },
         ]
 

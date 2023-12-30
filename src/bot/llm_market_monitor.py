@@ -4,7 +4,12 @@ from llm_interface import LLMInterface
 
 
 class MarketMonitor(LLMInterface):
-    def check_market(self, latest_indicators: Dict[str, Any], portfolio_breakdown: List[Dict]) -> Dict[str, Any]:
+    def check_market(
+        self,
+        latest_indicators_hourly: str,
+        latest_indicators_daily: str,
+        portfolio_breakdown: List[Dict],
+    ) -> Dict[str, Any]:
         messages = [
             {
                 "role": "system",
@@ -12,7 +17,7 @@ class MarketMonitor(LLMInterface):
             },
             {
                 "role": "user",
-                "content": f"Your trading porfolio breakdown: {portfolio_breakdown} \n\nprice and indicators of bitcoin: {str(latest_indicators)} \n\nGiven the price and indicators of bitcoin, should we call GPT4 to make a trade decision based off the latest price movement and indicators and their recent history? Consider that GPT4 costs are about $0.03 per request. Answer this and provide a reason for your decision.",
+                "content": f"Your trading porfolio breakdown: {portfolio_breakdown} \n\nhourly price and indicators of bitcoin: {latest_indicators_hourly} \n\ndaily price indicators of bitcoin: {latest_indicators_daily} \n\nGiven the price and indicators of bitcoin, should we call GPT4 to make a trade decision based off the latest price movement and indicators and their recent history? Consider that GPT4 costs are about $0.03 per request. Answer this and provide a reason for your decision.",
             },
         ]
         function = {

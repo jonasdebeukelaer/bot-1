@@ -7,9 +7,15 @@ from decision_tracker import DecisionTracker
 
 
 class TradingStrategy:
-    def __init__(self, exchange_interface: KucoinInterface, crypto_indicators: CryptoIndicators):
+    def __init__(
+        self,
+        exchange_interface: KucoinInterface,
+        indicators_hourly: CryptoIndicators,
+        indicators_daily: CryptoIndicators,
+    ):
         self.exchange_interface = exchange_interface
-        self.crypto_indicators = crypto_indicators
+        self.indicators_hourly = indicators_hourly
+        self.indicators_daily = indicators_daily
         self.market_monitor = MarketMonitor()
         self.trader = Trader()
         self.decision_tracker = DecisionTracker()
@@ -29,8 +35,11 @@ class TradingStrategy:
         order_book = self.exchange_interface.get_part_order_book()
 
         logger.log_info("Checking market...")
-        latest_crypto_indicators = self.crypto_indicators.get_latest()
-        answer = self.market_monitor.check_market(latest_crypto_indicators, portfolio_breakdown)
+        latest_indicators_hourly = self.indicators_hourly.get_formatted_latest_indicator_set()
+        latest_indicators_daily = self.indicators_daily.get_formatted_latest_indicator_set()
+        answer = self.market_monitor.check_market(
+            latest_indicators_hourly, latest_indicators_daily, portfolio_breakdown
+        )
 
         log_msg = "Decided to call GPT4: {}. Reasoning: {}".format(answer["should_call"], answer["reasoning"])
         logger.log_info(log_msg)
@@ -38,7 +47,11 @@ class TradingStrategy:
         if answer["should_call"]:
             logger.log_info("Calling GPT4 for trading decision...")
             trading_instructions = self.trader.get_trading_instructions(
-                self.crypto_indicators.formatted_indicator_history(), portfolio_breakdown, last_trades, order_book
+                self.indicators_hourly.get_formatted_indicator_history(),
+                self.indicators_daily.get_formatted_indicator_history(),
+                portfolio_breakdown,
+                last_trades,
+                order_book,
             )
 
             log_msg = "Made trade decision. Trade instructions: {}".format(trading_instructions)

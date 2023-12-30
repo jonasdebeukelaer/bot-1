@@ -7,7 +7,7 @@ from logger import logger
 from util import format_value
 
 INSTANTANEOUS_RESULT_COUNT = 1  # adjust formatting before changing
-MAX_INDICATOR_HISTORY = 20
+MAX_INDICATOR_HISTORY = 10
 
 
 class CryptoIndicators:
@@ -22,7 +22,48 @@ class CryptoIndicators:
 
         self.indicator_history = deque([], maxlen=MAX_INDICATOR_HISTORY)
 
-    def get_taapi_indicators(self) -> Any:
+    def fetch_indicators(self) -> None:
+        taapi_results = self._get_taapi_indicators()
+
+        # Parse and return the taapi_results
+        indicators = {}
+        for result in taapi_results:
+            indicator_name = result["id"]
+
+            formatted_results = {}
+            for key, value in result["result"].items():
+                if isinstance(value, list):
+                    formatted_results[key] = [format_value(v) for v in value]
+                else:
+                    formatted_results[key] = format_value(value)
+
+            if "value" in formatted_results:
+                indicator_value = formatted_results["value"]
+            else:
+                indicator_value = formatted_results
+            indicators[indicator_name] = indicator_value
+
+        # Get alternative.me indicators, only if interval is 1d since fear/greed
+        # index is only updated once a day
+        if self.interval == "1d":
+            alternative_me_indicators = self._get_alternative_me_indicators()
+            indicators.update(alternative_me_indicators)
+
+        self.indicator_history.append(indicators)
+
+    def get_formatted_latest_indicator_set(self) -> str:
+        if self.indicator_history:
+            return self._format_indicator_set(self.indicator_history[-1])
+        else:
+            return {}
+
+    def get_formatted_indicator_history(self) -> str:
+        formatted_history = ""
+        for indicators in self.indicator_history:
+            formatted_history += self._format_indicator_set(indicators) + "\n"
+        return formatted_history
+
+    def _get_taapi_indicators(self) -> Any:
         # Define the construct
         construct = {
             "exchange": self.exchange,
@@ -89,7 +130,8 @@ class CryptoIndicators:
             logger.log_info(response.text)
             response.raise_for_status()
 
-    def get_alternative_me_indicators(self):
+    def _get_alternative_me_indicators(self):
+        # note: the greed index is only updated once a day
         response = requests.get(
             "https://api.alternative.me/fng/",
             params={"limit": INSTANTANEOUS_RESULT_COUNT, "date_format": "uk"},
@@ -105,48 +147,7 @@ class CryptoIndicators:
 
         return {"fear/greed index": values}
 
-    def fetch_indicators(self) -> None:
-        taapi_results = self.get_taapi_indicators()
-
-        # Parse and return the taapi_results
-        indicators = {}
-        for result in taapi_results:
-            indicator_name = result["id"]
-
-            formatted_results = {}
-            for key, value in result["result"].items():
-                if isinstance(value, list):
-                    formatted_results[key] = [format_value(v) for v in value]
-                else:
-                    formatted_results[key] = format_value(value)
-
-            if "value" in formatted_results:
-                indicator_value = formatted_results["value"]
-            else:
-                indicator_value = formatted_results
-            indicators[indicator_name] = indicator_value
-
-        # Get alternative.me indicators
-        alternative_me_indicators = self.get_alternative_me_indicators()
-
-        # Parse and return the alternative_me_results
-        indicators.update(alternative_me_indicators)
-
-        self.indicator_history.append(indicators)
-
-    def get_latest(self) -> str:
-        if self.indicator_history:
-            return self.format_indicators(self.indicator_history[-1])
-        else:
-            return {}
-
-    def formatted_indicator_history(self) -> str:
-        formatted_history = ""
-        for indicators in self.indicator_history:
-            formatted_history += self.format_indicators(indicators) + "\n"
-        return formatted_history
-
-    def format_indicators(self, indicators: Dict[str, Any]) -> str:
+    def _format_indicator_set(self, indicators: Dict[str, Any]) -> str:
         # TODO: consider more than one value per indicator
         # TODO: volume seems off?
         formatted_indicators = f"symbol: {self.symbol}, interval: {self.interval}, exchange: {self.exchange}\n\n"
@@ -177,6 +178,12 @@ if __name__ == "__main__":
     load_dotenv()
     crypto_indicators = CryptoIndicators()
     crypto_indicators.fetch_indicators()
-    logger.log_info(f"Indicators: {crypto_indicators.get_latest()}")
+    logger.log_info(f"Indicators: {crypto_indicators.get_formatted_latest_indicator_set()}")
 
-    logger.log_info(f"Formatted indicator history: {crypto_indicators.formatted_indicator_history()}")
+    logger.log_info(f"Formatted indicator history: {crypto_indicators.get_formatted_indicator_history()}")
+
+    crypto_indicators = CryptoIndicators(interval="1d")
+    crypto_indicators.fetch_indicators()
+
+    # also contains fear/greed index
+    logger.log_info(f"Indicators: {crypto_indicators.get_formatted_latest_indicator_set()}")

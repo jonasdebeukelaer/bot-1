@@ -22,12 +22,14 @@ def main():
 
     load_dotenv()
     kucoin = KucoinInterface()
-    indicators_fetcher = CryptoIndicators()
-    trading_strategy = TradingStrategy(kucoin, indicators_fetcher)
+    indicators_fetcher_hourly = CryptoIndicators()
+    indicators_fetcher_daily = CryptoIndicators(interval="1d")
+    trading_strategy = TradingStrategy(kucoin, indicators_fetcher_hourly, indicators_fetcher_daily)
 
     try:
         while True:
-            indicators_fetcher.fetch_indicators()
+            indicators_fetcher_hourly.fetch_indicators()
+            indicators_fetcher_daily.fetch_indicators()
             trading_strategy.execute()
             time.sleep(ONE_HOUR)
     except KeyboardInterrupt:
