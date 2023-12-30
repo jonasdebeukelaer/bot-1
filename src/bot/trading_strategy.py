@@ -38,7 +38,7 @@ class TradingStrategy:
         if answer["should_call"]:
             logger.log_info("Calling GPT4 for trading decision...")
             trading_instructions = self.trader.get_trading_instructions(
-                self.crypto_indicators.indicator_history, portfolio_breakdown, last_trades, order_book
+                self.crypto_indicators.formatted_indicator_history(), portfolio_breakdown, last_trades, order_book
             )
 
             log_msg = "Made trade decision. Trade instructions: {}".format(trading_instructions)

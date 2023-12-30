@@ -6,12 +6,12 @@ from typing import Any, Dict
 from logger import logger
 from util import format_value
 
-INSTANTANEOUS_RESULT_COUNT = 1
+INSTANTANEOUS_RESULT_COUNT = 1  # adjust formatting before changing
 MAX_INDICATOR_HISTORY = 20
 
 
 class CryptoIndicators:
-    def __init__(self, symbol: str = "BTC/USDT", exchange: str = "binance", interval: str = "4h"):
+    def __init__(self, symbol: str = "BTC/GBP", exchange: str = "binance", interval: str = "1h"):
         if not os.environ.get("TAAPI_API_KEY"):
             raise EnvironmentError("The TAAPI_API_KEY environment variable is not set.")
 
@@ -34,6 +34,11 @@ class CryptoIndicators:
                     "indicator": "candle",
                     "results": INSTANTANEOUS_RESULT_COUNT,
                     "addResultTimestamp": False,
+                },
+                {
+                    "id": "price",
+                    "indicator": "price",
+                    "results": INSTANTANEOUS_RESULT_COUNT,
                 },
                 {
                     "id": "50EMA",
@@ -129,11 +134,41 @@ class CryptoIndicators:
 
         self.indicator_history.append(indicators)
 
-    def get_latest(self) -> Dict[str, Any]:
+    def get_latest(self) -> str:
         if self.indicator_history:
-            return self.indicator_history[-1]
+            return self.format_indicators(self.indicator_history[-1])
         else:
             return {}
+
+    def formatted_indicator_history(self) -> str:
+        formatted_history = ""
+        for indicators in self.indicator_history:
+            formatted_history += self.format_indicators(indicators) + "\n"
+        return formatted_history
+
+    def format_indicators(self, indicators: Dict[str, Any]) -> str:
+        # TODO: consider more than one value per indicator
+        # TODO: volume seems off?
+        formatted_indicators = f"symbol: {self.symbol}, interval: {self.interval}, exchange: {self.exchange}\n\n"
+        for indicator_name, indicator_value in indicators.items():
+            if indicator_name == "candle":
+                formatted_indicators += f"candle_timestamp: {indicator_value['timestampHuman']}, "
+                formatted_indicators += f"candle_volume: {indicator_value['volume']}, "
+                formatted_indicators += f"candle_high: {indicator_value['high']}, "
+                formatted_indicators += f"candle_low: {indicator_value['low']}, "
+                formatted_indicators += f"candle_open: {indicator_value['open']}, "
+                formatted_indicators += f"candle_close: {indicator_value['close']}, "
+
+            elif indicator_name == "MACD":
+                formatted_indicators += f"MACD: {indicator_value['valueMACD'][0]}, "
+                formatted_indicators += f"MACD_signal: {indicator_value['valueMACDSignal'][0]}, "
+                formatted_indicators += f"MACD_hist: {indicator_value['valueMACDHist'][0]}, "
+            elif indicator_name == "price":
+                formatted_indicators += f"price: {indicator_value[0]}, "
+            else:
+                formatted_indicators += f"{indicator_name}: {indicator_value[0]}, "
+
+        return formatted_indicators[:-2] + "\n\n"
 
 
 if __name__ == "__main__":
@@ -143,3 +178,5 @@ if __name__ == "__main__":
     crypto_indicators = CryptoIndicators()
     crypto_indicators.fetch_indicators()
     logger.log_info(f"Indicators: {crypto_indicators.get_latest()}")
+
+    logger.log_info(f"Formatted indicator history: {crypto_indicators.formatted_indicator_history()}")
