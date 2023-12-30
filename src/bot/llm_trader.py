@@ -10,7 +10,7 @@ class Trader(LLMInterface):
         self,
         latest_indicators: str,
         portfolio_breakdown: List[Dict],
-        last_trades: List[Dict],
+        last_trades: List[str],
         order_book: Dict[str, Any],
     ) -> Dict[str, Any]:
         messages = [

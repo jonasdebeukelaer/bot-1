@@ -65,21 +65,13 @@ class KucoinInterface:
         # just look at first page for now as a limit
         # NOTE: built in limit of up to 1 week old trades only
         data = self.trade_client.get_fill_list(tradeType="TRADE", symbol=symbol, pageSize=limit)
-        cleaned = []
+        formatted = []
         for item in data["items"]:
-            cleaned.append(
-                {
-                    "symbol": item["symbol"],
-                    "side": item["side"],
-                    "price": format_value(item["price"]),
-                    "size": item["size"],
-                    "fee": f'{format_value(item["fee"])} {item["feeCurrency"]}',
-                    "createdAt": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(item["createdAt"] / 1000)),
-                }
-            )
+            ts = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(item["createdAt"] / 1000))
+            formatted.append(f"{ts} {item['side']} {item['size']} {item['symbol']} at £{format_value(item['price'])}")
 
-        logger.log_info(f"Last {limit} trades: {cleaned}")
-        return cleaned
+        logger.log_info(f"Last {limit} trades: {formatted}")
+        return formatted
 
     def get_part_order_book(self, symbol="BTC-GBP", pieces=20):
         data = self.market_client.get_part_order(symbol=symbol, pieces=pieces)
