@@ -62,7 +62,6 @@ class TradingStrategy:
 
 
 if __name__ == "__main__":
-    import logging 
     from dotenv import load_dotenv
 
     load_dotenv()
