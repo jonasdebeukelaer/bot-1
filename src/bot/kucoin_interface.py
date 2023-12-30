@@ -54,7 +54,7 @@ class KucoinInterface:
             elif entry["balance"] == "0" or entry["available"] == "0":
                 continue
 
-            new_entry = {"currency": entry["currency"], "available": entry["available"]}
+            new_entry = f"{entry['available']} {entry['currency']}"
 
             output.append(new_entry)
 
