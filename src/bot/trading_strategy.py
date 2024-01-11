@@ -63,7 +63,7 @@ class TradingStrategy:
 
             # TODO: track all params of each trading round so easier to collect at the end
             self.decision_tracker.record_trade(trading_instructions)
-            self.decision_tracker.record_porfolio(portfolio_breakdown)
+            self.decision_tracker.record_portfolio(portfolio_breakdown)
 
             logger.log_info("Made trade.")
         else:

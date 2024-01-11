@@ -51,6 +51,10 @@ class Trader(LLMInterface):
                         "type": "string",
                         "description": "Specify any additional data which would have helped you make a better decision.",
                     },
+                    "data_issues": {
+                        "type": "string",
+                        "description": "Specify any issues you noticed in the data provided.",
+                    }
                 },
                 "required": ["size", "price", "side", "reasoning"],
             },

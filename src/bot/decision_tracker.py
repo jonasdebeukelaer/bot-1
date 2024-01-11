@@ -21,7 +21,7 @@ class DecisionTracker:
         dt = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
         required_keys = ["size", "price", "side", "reasoning"]
-        if not all(key in raw_trade_data for key in required_keys):
+        if not all(key in raw_trade_data for key in required_keys) and raw_trade_data != "no trade":
             raise ValueError(f"Missing one or more required keys in trade data: {required_keys}")
 
         try:
@@ -37,6 +37,7 @@ class DecisionTracker:
                     raw_trade_data["side"],
                     raw_trade_data["reasoning"],
                     raw_trade_data["data_request"] if "data_request" in raw_trade_data else "-",
+                    raw_trade_data["data_issues"] if "data_issues" in raw_trade_data else "-",
                 ]
                 self.trades_sheet.append_row(trade_data)
 
@@ -49,7 +50,7 @@ class DecisionTracker:
         except ValueError as e:
             logger.log_error(f"ERROR: {e}")
 
-    def record_porfolio(self, raw_account_data: List) -> None:
+    def record_portfolio(self, raw_account_data: List) -> None:
         dt = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
         account_data = []
@@ -80,14 +81,15 @@ if __name__ == "__main__":
         "side": "buy",
         "reasoning": "TEST REASON",
         "data_request": "TEST DATA REQUEST",
+        "data_issues": "TEST DATA ISSUES",
     }
     dt.record_trade(trade_data)
     dt.record_trade("no trade")
 
     raw_portfolio_data = [
-        {"currency": "GBP", "balance": "1.62"},
-        {"currency": "BTC", "balance": "0.00000001"},
-        {"currency": "USDT", "balance": "0.00000002"},
-        {"currency": "GBP", "balance": "0"},  # included in response, but gets ignored in here
+        {"currency": "GBP", "available": "1.62"},
+        {"currency": "BTC", "available": "0.00000001"},
+        {"currency": "USDT", "available": "0.00000002"},
+        {"currency": "GBP", "available": "0"},  # included in response, but gets ignored in here
     ]
     dt.record_portfolio(raw_portfolio_data)
