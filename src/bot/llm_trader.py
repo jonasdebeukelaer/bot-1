@@ -1,7 +1,9 @@
+import time
 from typing import Dict, List, Any
 
 from llm_interface import LLMInterface
 from logger import logger
+from kucoin_interface import PortfolioBreakdown
 
 
 class Trader(LLMInterface):
@@ -9,13 +11,15 @@ class Trader(LLMInterface):
         self,
         indicator_history_hourly: str,
         indicator_history_daily: str,
-        portfolio_breakdown: List[Dict],
+        portfolio_breakdown: PortfolioBreakdown,
         last_trades: List[str],
         order_book: Dict[str, Any],
     ) -> Dict[str, Any]:
-        system_message = "You are an advanced swing trader with a medium-high risk appetite. You've been trading Bitcoin and other cryptocurrencies, leveraging your expertise to capitalize on market trends while managing risks. Provide recommendations avoiding things like FOMO and FUD. You are requested to make a decision once an hour, so take this into account when making your decision. Make sure to think step by stepin the reasoning property before making a decision."
+        system_message = "You are an advanced swing trader with a medium-high risk appetite. You've been trading Bitcoin and other cryptocurrencies, leveraging your expertise to capitalize on market trends while managing risks. Provide recommendations avoiding things like FOMO and FUD. You are requested to make a decision once an hour, so take this into account when making your decision. Make sure to think step by step in the reasoning property before making a decision."
 
-        user_message = f"Your trading porfolio breakdown: {portfolio_breakdown} \n\n Your last 20 trades within the last 7 days: {last_trades} \n\nhourly price and indicators of bitcoin: {indicator_history_hourly} \n\ndaily price and indicators of bitcoin: {indicator_history_daily} \n\nkucoin order book (20 pieces): {order_book} \n\nGiven your portfolio, the price and indicators history of bitcoin provided and your last trades, what is your trading decision?"
+        current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+
+        user_message = f"Current time: {current_time} \n\n Your trading porfolio breakdown: {portfolio_breakdown.get_formatted()} \n\n Your last 20 trades within the last 7 days: {last_trades} \n\nhourly price and indicators of bitcoin: {indicator_history_hourly} \n\ndaily price and indicators of bitcoin: {indicator_history_daily} \n\nkucoin order book (20 pieces): {order_book} \n\nGiven your portfolio, the price and indicators history of bitcoin provided and your last trades, what is your trading decision?"
 
         logger.log_info("Message sent to LLM: " + user_message)
 
@@ -54,7 +58,7 @@ class Trader(LLMInterface):
                     "data_issues": {
                         "type": "string",
                         "description": "Specify any issues you noticed in the data provided.",
-                    }
+                    },
                 },
                 "required": ["size", "price", "side", "reasoning"],
             },

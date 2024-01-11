@@ -1,10 +1,18 @@
 import os
 import time
+from typing import Any, Dict, List
 
 from kucoin.client import Trade, User, Market
 from logger import logger
 from util import format_value
 
+# TODO: move out of this file, possibly do same for other pieces of data?
+class PortfolioBreakdown:
+    def __init__(self, raw: Dict[str, Any]):
+        self.raw = raw
+    
+    def get_formatted(self) -> List[str]:
+        return [f"{entry['available']} {entry['currency']}" for entry in self.raw]
 
 class KucoinInterface:
     def __init__(self):
@@ -44,24 +52,22 @@ class KucoinInterface:
             else:
                 raise e
 
-    def get_portfolio_breakdown(self):
+    def get_portfolio_breakdown(self) -> PortfolioBreakdown:
         data = self.user_client.get_account_list()
 
-        output = []
+        relevant_data = []
         for entry in data:
             if entry["currency"] not in ["GBP", "USDT", "BTC"]:
                 continue
             elif entry["balance"] == "0" or entry["available"] == "0":
                 continue
 
-            new_entry = f"{entry['available']} {entry['currency']}"
+            relevant_data.append(entry)
 
-            output.append(new_entry)
+        logger.log_info(f"Relevant portfolio breakdown: {relevant_data}")
+        return PortfolioBreakdown(relevant_data)
 
-        logger.log_info(f"Portfolio breakdown: {output}")
-        return output
-
-    def get_last_trades(self, symbol="BTC-GBP", limit=20):
+    def get_last_trades(self, symbol="BTC-GBP", limit=20) -> List[str]:
         # just look at first page for now as a limit
         # NOTE: built in limit of up to 1 week old trades only
         data = self.trade_client.get_fill_list(tradeType="TRADE", symbol=symbol, pageSize=limit)
@@ -73,7 +79,7 @@ class KucoinInterface:
         logger.log_info(f"Last {limit} trades: {formatted}")
         return formatted
 
-    def get_part_order_book(self, symbol="BTC-GBP", pieces=20):
+    def get_part_order_book(self, symbol="BTC-GBP", pieces=20) -> Dict[str, Any]:
         data = self.market_client.get_part_order(symbol=symbol, pieces=pieces)
         data["timestamp"] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(data["time"] / 1000))
         del data["time"], data["sequence"]

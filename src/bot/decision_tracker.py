@@ -1,8 +1,9 @@
 import time
-from typing import List, Dict, Any, Union
+from typing import Dict, Any, Union
 
 import gspread
 from google.auth import default
+from kucoin_interface import PortfolioBreakdown
 
 from logger import logger
 
@@ -50,11 +51,11 @@ class DecisionTracker:
         except ValueError as e:
             logger.log_error(f"ERROR: {e}")
 
-    def record_portfolio(self, raw_account_data: List) -> None:
+    def record_portfolio(self, portfolio_breakdown: PortfolioBreakdown) -> None:
         dt = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
         account_data = []
-        for x in raw_account_data:
+        for x in portfolio_breakdown.raw:
             if x["currency"] in ["GBP", "BTC", "USDT"]:
                 try:
                     balance = float(x["available"])
@@ -67,7 +68,7 @@ class DecisionTracker:
             self.portfolio_sheet.append_row([dt] + account_data)
 
         except gspread.exceptions.APIError as e:
-            logger.log_error(f"ERROR: failed to record account data to Google Sheet (data: {raw_account_data}). {e}")
+            logger.log_error(f"ERROR: failed to record account data to Google Sheet (data: {portfolio_breakdown.raw}). {e}")
         except ValueError as e:
             logger.log_error(f"ERROR: {e}")
 
@@ -86,10 +87,10 @@ if __name__ == "__main__":
     dt.record_trade(trade_data)
     dt.record_trade("no trade")
 
-    raw_portfolio_data = [
+    raw_portfolio_data = PortfolioBreakdown([
         {"currency": "GBP", "available": "1.62"},
         {"currency": "BTC", "available": "0.00000001"},
         {"currency": "USDT", "available": "0.00000002"},
         {"currency": "GBP", "available": "0"},  # included in response, but gets ignored in here
-    ]
+    ])
     dt.record_portfolio(raw_portfolio_data)
