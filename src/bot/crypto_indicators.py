@@ -53,7 +53,9 @@ class CryptoIndicators:
 
     def get_formatted_latest_indicator_set(self) -> str:
         if self.indicator_history:
-            return self._format_indicator_set(self.indicator_history[-1])
+            formatted_latest_indicator_set = self._format_indicator_set(self.indicator_history[-1])
+            formatted_message = f"symbol: {self.symbol}, interval: {self.interval}, exchange: {self.exchange}\n{formatted_latest_indicator_set}"
+            return formatted_message
         else:
             return {}
 
@@ -61,7 +63,9 @@ class CryptoIndicators:
         formatted_history = ""
         for indicators in self.indicator_history:
             formatted_history += self._format_indicator_set(indicators) + "\n"
-        return formatted_history
+        
+        formatted_message = f"symbol: {self.symbol}, interval: {self.interval}, exchange: {self.exchange}\n{formatted_history}"
+        return formatted_message
 
     # TODO: implement
     def backfill_indicator_history(self) -> None:
@@ -181,7 +185,7 @@ class CryptoIndicators:
     def _format_indicator_set(self, indicators: Dict[str, Any]) -> str:
         # TODO: consider more than one value per indicator
         # TODO: volume seems off?
-        formatted_indicators = f"symbol: {self.symbol}, interval: {self.interval}, exchange: {self.exchange}\n\n"
+        formatted_indicators = ""
         for indicator_name, indicator_value in indicators.items():
             if indicator_name == "candle":
                 formatted_indicators += f"candle_timestamp: {indicator_value['timestampHuman']}, "
@@ -200,21 +204,23 @@ class CryptoIndicators:
             else:
                 formatted_indicators += f"{indicator_name}: {indicator_value[0]}, "
 
-        return formatted_indicators[:-2] + "\n\n"
+        return formatted_indicators[:-2]
 
 
 if __name__ == "__main__":
     from dotenv import load_dotenv
 
     load_dotenv()
-    crypto_indicators = CryptoIndicators()
-    crypto_indicators.fetch_indicators()
-    logger.log_info(f"Indicators: {crypto_indicators.get_formatted_latest_indicator_set()}")
+    hourly_crypto_indicators = CryptoIndicators()
+    hourly_crypto_indicators.fetch_indicators()
+    hourly_crypto_indicators.fetch_indicators()
 
-    logger.log_info(f"Formatted indicator history: {crypto_indicators.get_formatted_indicator_history()}")
+    logger.log_info(f"Indicators: {hourly_crypto_indicators.get_formatted_latest_indicator_set()}")
 
-    crypto_indicators = CryptoIndicators(interval="1d")
-    crypto_indicators.fetch_indicators()
+    logger.log_info(f"Formatted indicator history: {hourly_crypto_indicators.get_formatted_indicator_history()}")
+
+    daily_crypto_indicators = CryptoIndicators(interval="1d")
+    daily_crypto_indicators.fetch_indicators()
 
     # also contains fear/greed index
-    logger.log_info(f"Indicators: {crypto_indicators.get_formatted_latest_indicator_set()}")
+    logger.log_info(f"Indicators: {daily_crypto_indicators.get_formatted_latest_indicator_set()}")
