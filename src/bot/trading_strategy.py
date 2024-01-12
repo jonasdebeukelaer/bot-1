@@ -4,6 +4,7 @@ from crypto_indicators import CryptoIndicators
 from llm_market_monitor import MarketMonitor
 from llm_trader import Trader
 from decision_tracker import DecisionTracker
+from news_extractor import NewsExtractor
 
 
 class TradingStrategy:
@@ -19,6 +20,7 @@ class TradingStrategy:
         self.market_monitor = MarketMonitor()
         self.trader = Trader()
         self.decision_tracker = DecisionTracker()
+        self.news_extractor = NewsExtractor()
 
     def execute(self):
         logger.reset_counter()
@@ -34,11 +36,14 @@ class TradingStrategy:
         logger.log_info("Getting order book...")
         order_book = self.exchange_interface.get_part_order_book()
 
+        logger.log_info("Getting latest news...")
+        news = self.news_extractor.get_news()
+
         logger.log_info("Checking market...")
         latest_indicators_hourly = self.indicators_hourly.get_formatted_latest_indicator_set()
         latest_indicators_daily = self.indicators_daily.get_formatted_latest_indicator_set()
         answer = self.market_monitor.check_market(
-            latest_indicators_hourly, latest_indicators_daily, portfolio_breakdown
+            latest_indicators_hourly, latest_indicators_daily, portfolio_breakdown, news
         )
 
         log_msg = "Decided to call GPT4: {}. Reasoning: {}".format(answer["should_call"], answer["reasoning"])
@@ -52,6 +57,7 @@ class TradingStrategy:
                 portfolio_breakdown,
                 last_trades,
                 order_book,
+                news,
             )
 
             log_msg = "Made trade decision. Trade instructions: {}".format(trading_instructions)

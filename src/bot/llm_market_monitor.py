@@ -10,6 +10,7 @@ class MarketMonitor(LLMInterface):
         latest_indicators_hourly: str,
         latest_indicators_daily: str,
         portfolio_breakdown: PortfolioBreakdown,
+        news: str,
     ) -> Dict[str, Any]:
         messages = [
             {
@@ -18,7 +19,7 @@ class MarketMonitor(LLMInterface):
             },
             {
                 "role": "user",
-                "content": f"Your trading porfolio breakdown: {portfolio_breakdown.get_formatted()} \n\nhourly price and indicators of bitcoin: {latest_indicators_hourly} \n\ndaily price indicators of bitcoin: {latest_indicators_daily} \n\nGiven the price and indicators of bitcoin, should we call GPT4 to make a trade decision based off the latest price movement and indicators and their recent history? Consider that GPT4 costs are about $0.03 per request. Answer this and provide a reason for your decision.",
+                "content": f"Your trading porfolio breakdown: {portfolio_breakdown.get_formatted()} \n\nhourly price and indicators of bitcoin: {latest_indicators_hourly} \n\ndaily price indicators of bitcoin: {latest_indicators_daily} \n\nLatest news relating to bitcoin and crypto: \n{news} \n\nGiven all the above, should we call GPT4 to make a trade decision based off the latest price movement and indicators and their recent history? Consider that GPT4 costs are about $0.03 per request. Answer this and provide a reason for your decision.",
             },
         ]
         function = {
