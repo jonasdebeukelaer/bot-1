@@ -27,13 +27,10 @@ def main():
     trading_strategy = TradingStrategy(kucoin, indicators_fetcher_hourly, indicators_fetcher_daily)
 
     try:
-        current_dom = time.localtime().tm_mday
         while True:
             indicators_fetcher_hourly.fetch_indicators()
-
-            if time.localtime().tm_mday != current_dom:
-                indicators_fetcher_daily.fetch_indicators()
-                current_dom = time.localtime().tm_mday
+            # TODO: find way to update daily indicator in history if same day
+            indicators_fetcher_daily.fetch_indicators()
 
             trading_strategy.execute()
             time.sleep(ONE_HOUR)
