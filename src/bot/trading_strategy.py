@@ -77,6 +77,8 @@ class TradingStrategy:
         log_msg = "Received trade instructions: {}".format(trading_instructions)
         logger.log_info(log_msg)
 
+        self.decision_tracker.record_trade_instructions(trading_instructions)
+
         if self._material_trade_requested(trading_instructions):
             self.exchange_interface.execute_trade(
                 trading_instructions["size"],
@@ -84,7 +86,6 @@ class TradingStrategy:
                 trading_instructions["price"],
             )
 
-            self.decision_tracker.record_trade(trading_instructions)
             self.decision_tracker.record_portfolio(portfolio_breakdown)
 
             logger.log_info("Trade executed successfully.")

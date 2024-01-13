@@ -18,7 +18,7 @@ class DecisionTracker:
         self.trades_sheet = self.client.open(sheet_name).sheet1
         self.portfolio_sheet = self.client.open(sheet_name).get_worksheet_by_id(1500161050)
 
-    def record_trade(self, raw_trade_data: Dict[str, Any]) -> None:
+    def record_trade_instructions(self, raw_trade_data: Dict[str, Any]) -> None:
         dt = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
         if type(raw_trade_data) is not dict:
@@ -82,7 +82,7 @@ if __name__ == "__main__":
         "data_request": "TEST DATA REQUEST",
         "data_issues": "TEST DATA ISSUES",
     }
-    dt.record_trade(trade_data)
+    dt.record_trade_instructions(trade_data)
 
     raw_portfolio_data = PortfolioBreakdown(
         [
