@@ -1,5 +1,6 @@
+from typing import Any, Dict, List
 from logger import logger
-from kucoin_interface import KucoinInterface
+from kucoin_interface import KucoinInterface, PortfolioBreakdown
 from crypto_indicators import CryptoIndicators
 from llm_market_monitor import MarketMonitor
 from llm_trader import Trader
@@ -50,34 +51,48 @@ class TradingStrategy:
         logger.log_info(log_msg)
 
         if answer["should_call"]:
-            logger.log_info("Calling GPT4 for trading decision...")
-            trading_instructions = self.trader.get_trading_instructions(
-                self.indicators_hourly.get_formatted_indicator_history(),
-                self.indicators_daily.get_formatted_indicator_history(),
-                portfolio_breakdown,
-                last_trades,
-                order_book,
-                news,
-            )
+            self._make_trade_decision(portfolio_breakdown, last_trades, order_book, news)
+        else:
+            logger.log_info("No trade decision requested by gpt3.5.")
 
-            log_msg = "Made trade decision. Trade instructions: {}".format(trading_instructions)
-            logger.log_info(log_msg)
+        logger.log_info("Finished execution\n")
 
+    def _make_trade_decision(
+        self,
+        portfolio_breakdown: PortfolioBreakdown,
+        last_trades: List[str],
+        order_book: Dict[str, Any],
+        news: str,
+    ) -> None:
+        logger.log_info("Calling GPT4 for trading decision...")
+        trading_instructions = self.trader.get_trading_instructions(
+            self.indicators_hourly.get_formatted_indicator_history(),
+            self.indicators_daily.get_formatted_indicator_history(),
+            portfolio_breakdown,
+            last_trades,
+            order_book,
+            news,
+        )
+
+        log_msg = "Received trade instructions: {}".format(trading_instructions)
+        logger.log_info(log_msg)
+
+        if self._material_trade_requested(trading_instructions):
             self.exchange_interface.execute_trade(
-                trading_instructions["size"], trading_instructions["side"], trading_instructions["price"]
+                trading_instructions["size"],
+                trading_instructions["side"],
+                trading_instructions["price"],
             )
 
-            # TODO: track all params of each trading round so easier to collect at the end
             self.decision_tracker.record_trade(trading_instructions)
             self.decision_tracker.record_portfolio(portfolio_breakdown)
 
-            logger.log_info("Made trade.")
+            logger.log_info("Trade executed successfully.")
         else:
-            self.decision_tracker.record_trade("no trade")
+            logger.log_info("No trade requested by gpt4.")
 
-            logger.log_info("No trade requested.")
-
-        logger.log_info("Finished execution\n")
+    def _material_trade_requested(self, trading_instructions: Dict[str, Any]) -> bool:
+        return trading_instructions["side"] != "none" and trading_instructions["size"] != 0
 
 
 if __name__ == "__main__":
