@@ -20,7 +20,7 @@ class Trader(LLMInterface):
 
         current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
-        user_message = f"Current time: {current_time} \n\n Your trading porfolio breakdown: {portfolio_breakdown.get_formatted()} \n\n Your last 20 trades within the last 7 days: {last_trades} \n\nhourly price and indicators of bitcoin: {indicator_history_hourly} \n\ndaily price and indicators of bitcoin: {indicator_history_daily} \n\nkucoin order book (20 pieces): {order_book} \n\nLatest news relating to bitcoin and crypto: \n{news} \n\nGiven all the above information, make an appropriate trade."
+        user_message = f"Current time: {current_time} \n\n Your trading porfolio breakdown: {portfolio_breakdown.get_formatted()} \n\n Your last 20 trades within the last 7 days: {last_trades} \n\nhourly price and indicators of bitcoin: {indicator_history_hourly} \n\ndaily price and indicators of bitcoin: {indicator_history_daily} \n\nkucoin order book (20 pieces): {order_book} \n\nLatest news relating to bitcoin and crypto: \n{news} \n\nGiven all the above information, make an appropriate trade. Do not attempt to make any trades larger than what is currently available in your portfolio."
 
         logger.log_info("Message sent to LLM: " + user_message)
 
