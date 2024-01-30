@@ -49,7 +49,14 @@ class CryptoIndicators:
             alternative_me_indicators = self._get_alternative_me_indicators()
             indicators.update(alternative_me_indicators)
 
-        self.indicator_history.append(indicators)
+        # if entry in history already exists for this timestamp, replace it otherwise append
+        if (
+            self.indicator_history
+            and self.indicator_history[-1]["candle"]["timestampHuman"] == indicators["candle"]["timestampHuman"]
+        ):
+            self.indicator_history[-1] = indicators
+        else:
+            self.indicator_history.append(indicators)
 
     def get_formatted_latest_indicator_set(self) -> str:
         if self.indicator_history:
@@ -63,8 +70,10 @@ class CryptoIndicators:
         formatted_history = ""
         for indicators in self.indicator_history:
             formatted_history += self._format_indicator_set(indicators) + "\n"
-        
-        formatted_message = f"symbol: {self.symbol}, interval: {self.interval}, exchange: {self.exchange}\n{formatted_history}"
+
+        formatted_message = (
+            f"symbol: {self.symbol}, interval: {self.interval}, exchange: {self.exchange}\n{formatted_history}"
+        )
         return formatted_message
 
     # TODO: implement
@@ -217,6 +226,7 @@ if __name__ == "__main__":
 
     logger.log_info(f"Indicators: {hourly_crypto_indicators.get_formatted_latest_indicator_set()}")
 
+    # only one result (usually) since likely both results for same hour
     logger.log_info(f"Formatted indicator history: {hourly_crypto_indicators.get_formatted_indicator_history()}")
 
     daily_crypto_indicators = CryptoIndicators(interval="1d")
