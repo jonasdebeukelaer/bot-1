@@ -45,7 +45,7 @@ class KucoinInterface:
             logger.log_info(f"Executing trade: {id}")
             self.trade_client.create_market_order(clientOid=id, symbol="BTC-GBP", side=side, size=size)
         except Exception as e:
-            if type(e.args) == list and "200004" in e.args[0]:
+            if type(e.args) == tuple and "200004" in e.args[0]:
                 logger.log_error(
                     f"Insufficient funds in kucoin to execute trade. attempted with {size} {side} at £{price}"
                 )
