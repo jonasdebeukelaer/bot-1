@@ -51,17 +51,15 @@ class DecisionTracker:
     def record_portfolio(self, portfolio_breakdown: PortfolioBreakdown) -> None:
         dt = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
-        account_data = []
-        for currency, balance in portfolio_breakdown.raw.items():
-            if currency in ["GBP", "BTC", "USDT"]:
-                try:
-                    if balance > 0:
-                        account_data.append(balance)
-                except ValueError:
-                    logger.log_error(f"ERROR: Invalid balance format for currency {currency}: {balance}")
+        account_data = [
+            dt,
+            portfolio_breakdown.raw["GBP"],
+            portfolio_breakdown.raw["BTC"],
+            portfolio_breakdown.raw["USDT"],
+        ]
 
         try:
-            self.portfolio_sheet.append_row([dt] + account_data)
+            self.portfolio_sheet.append_row(account_data)
 
         except gspread.exceptions.APIError as e:
             logger.log_error(
