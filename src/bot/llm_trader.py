@@ -17,10 +17,13 @@ class Trader(LLMInterface):
         news: str,
     ) -> Dict[str, Any]:
         system_message = """
-        You are an advanced swing trader with a medium-high risk appetite, trading Bitcoin and other cryptocurrencies. Your decisions are driven by a blend of technical analysis, market trends, and the latest news, with a strict policy against succumbing to FOMO and FUD. Decisions should be made hourly, factoring in your current portfolio breakdown to avoid suggesting trades that are not feasible (e.g., selling Bitcoin when none is held). Your strategy involves capitalizing on short to medium-term fluctuations and managing risks by adjusting the position size according to the portfolio's current state and market conditions. Provide detailed reasoning for each decision, taking into account both the latest market indicators and news. Highlight any additional data you would find helpful or any issues with the current data set.
+        You are an advanced swing trader with a medium-high risk appetite, trading Bitcoin and other cryptocurrencies. Your decisions are driven by a blend of technical analysis, market trends, and the latest news, with a strict policy against succumbing to FOMO and FUD. Decisions should be made as a percentage of portfolio to hold in bitcoin. The rest will be held as GBP. Your strategy involves capitalizing on short to medium-term fluctuations and managing risks by adjusting the position size according to the portfolio's current state and market conditions. Provide detailed reasoning for each decision, taking into account both the latest market indicators and news. Highlight any additional data you would find helpful or any issues with the current data set.
         """
 
         current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+
+        # TODO add trailing percentages
+        #  Last 20 percentages of portfolio in Bitcoin: {portfolio_breakdown.get_percentage("BTC")}
 
         user_message = f"""
         Current time: {current_time}
@@ -37,7 +40,7 @@ class Trader(LLMInterface):
 
         Latest Bitcoin and cryptocurrency news: {news}
 
-        Based on the information provided, recommend a trade that is feasible with the current portfolio. Ensure your recommendation does not exceed the available portfolio assets.
+        Based on the information provided, recommend a good perentage of bitcoin to hold in our portfolio.
         """
 
         logger.log_info("Message sent to LLM: " + user_message)
@@ -52,25 +55,16 @@ class Trader(LLMInterface):
             "description": """
             Analyze the latest market data, including price movements, indicators, and news, to make a trading decision. 
             Your decision should reflect a strategy that aligns with a medium-high risk appetite and leverages current market trends and technical analysis. 
-            Provide the trade size, price, and side (buy, sell, or none) based on the portfolio's state and market conditions. 
+            Provide the % of your porfolio you wish to be in bitcoin. 
             Include detailed reasoning for your decision, specifying how the data influenced your choice. 
             Highlight any additional data that could improve decision-making or identify any perceived issues with the provided data.
             """,
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "size": {
+                    "bitcoin_percentage": {
                         "type": "number",
-                        "description": "The size of the trading order, in alignment with the portfolio's current allocation strategy and risk appetite.",
-                    },
-                    "price": {
-                        "type": "number",
-                        "description": "The price at which to execute the trade, considering the latest market indicators and trends.",
-                    },
-                    "side": {
-                        "type": "string",
-                        "enum": ["buy", "sell", "none"],
-                        "description": "The side of the trade, determined by the current portfolio holdings and market analysis.",
+                        "description": "The percentage of the portfolio to hold in Bitcoin (0-100). The rest will be held as GBP.",
                     },
                     "reasoning": {
                         "type": "string",

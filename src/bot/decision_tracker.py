@@ -24,7 +24,7 @@ class DecisionTracker:
         if type(raw_trade_data) is not dict:
             raise ValueError(f"raw_trade_data must be a dict, not {type(raw_trade_data)}")
 
-        required_keys = ["size", "price", "side", "reasoning"]
+        required_keys = ["bitcoin_percentage", "reasoning"]
         if not all(key in raw_trade_data for key in required_keys):
             raise ValueError(f"Missing one or more required keys in trade data: {required_keys}")
 
@@ -32,12 +32,13 @@ class DecisionTracker:
             trade_data = [
                 dt,
                 "GBP-BTC",
-                raw_trade_data["size"],
-                raw_trade_data["price"],
-                raw_trade_data["side"],
+                "-",
+                "-",
+                "-",
                 raw_trade_data["reasoning"],
                 raw_trade_data["data_request"] if "data_request" in raw_trade_data else "-",
                 raw_trade_data["data_issues"] if "data_issues" in raw_trade_data else "-",
+                raw_trade_data["bitcoin_percentage"],
             ]
             self.trades_sheet.append_row(trade_data)
 
@@ -51,14 +52,13 @@ class DecisionTracker:
         dt = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
         account_data = []
-        for x in portfolio_breakdown.raw:
-            if x["currency"] in ["GBP", "BTC", "USDT"]:
+        for currency, balance in portfolio_breakdown.raw.items():
+            if currency in ["GBP", "BTC", "USDT"]:
                 try:
-                    balance = float(x["available"])
                     if balance > 0:
                         account_data.append(balance)
                 except ValueError:
-                    logger.log_error(f"ERROR: Invalid balance format for currency {x['currency']}: {x['available']}")
+                    logger.log_error(f"ERROR: Invalid balance format for currency {currency}: {balance}")
 
         try:
             self.portfolio_sheet.append_row([dt] + account_data)

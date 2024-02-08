@@ -51,7 +51,13 @@ class TradingStrategy:
         logger.log_info(log_msg)
 
         if answer["should_call"]:
-            self._make_trade_decision(portfolio_breakdown, last_trades, order_book, news)
+            self._make_trade_decision(
+                portfolio_breakdown,
+                last_trades,
+                order_book,
+                news,
+                self.indicators_hourly.get_latest_price(),
+            )
         else:
             logger.log_info("No trade decision requested by gpt3.5.")
 
@@ -63,6 +69,7 @@ class TradingStrategy:
         last_trades: List[str],
         order_book: Dict[str, Any],
         news: str,
+        latest_bitcoin_price: float,
     ) -> None:
         logger.log_info("Calling GPT4 for trading decision...")
         trading_instructions = self.trader.get_trading_instructions(
@@ -79,21 +86,13 @@ class TradingStrategy:
 
         self.decision_tracker.record_trade_instructions(trading_instructions)
 
-        if self._material_trade_requested(trading_instructions):
-            self.exchange_interface.execute_trade(
-                trading_instructions["size"],
-                trading_instructions["side"],
-                trading_instructions["price"],
-            )
+        self.exchange_interface.execute_trade(
+            latest_bitcoin_price,
+            trading_instructions["bitcoin_percentage"],
+        )
 
-            self.decision_tracker.record_portfolio(portfolio_breakdown)
-
-            logger.log_info("Trade executed successfully.")
-        else:
-            logger.log_info("No trade requested by gpt4.")
-
-    def _material_trade_requested(self, trading_instructions: Dict[str, Any]) -> bool:
-        return trading_instructions["side"] != "none" and trading_instructions["size"] != 0
+        self.decision_tracker.record_portfolio(portfolio_breakdown)
+        logger.log_info("Trade request executed successfully.")
 
 
 if __name__ == "__main__":

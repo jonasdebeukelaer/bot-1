@@ -58,6 +58,18 @@ class CryptoIndicators:
         else:
             self.indicator_history.append(indicators)
 
+    def get_latest_indicator_set(self) -> Dict[str, Any]:
+        if self.indicator_history:
+            return self.indicator_history[-1]
+        else:
+            return {}
+
+    def get_latest_price(self) -> float:
+        if self.indicator_history:
+            return float(self.indicator_history[-1]["price"][0])
+        else:
+            return 0
+
     def get_formatted_latest_indicator_set(self) -> str:
         if self.indicator_history:
             formatted_latest_indicator_set = self._format_indicator_set(self.indicator_history[-1])

@@ -6,13 +6,33 @@ from kucoin.client import Trade, User, Market
 from logger import logger
 from util import format_value
 
+SMALLEST_TRADE_SIZE_PERCENTAGE = 2
+BTC_INCREMENT_DECIMAL = 4
+
+
 # TODO: move out of this file, possibly do same for other pieces of data?
 class PortfolioBreakdown:
-    def __init__(self, raw: Dict[str, Any]):
-        self.raw = raw
-    
+    def __init__(self, raw: List[Dict]):
+        # convert list to dict
+        self.raw: Dict[str, float] = {entry["currency"]: float(entry["available"]) for entry in raw}
+
     def get_formatted(self) -> List[str]:
-        return [f"{entry['available']} {entry['currency']}" for entry in self.raw]
+        return [f"{value} {key}" for key, value in self.raw.items()]
+
+    def get_btc_percentage(self, latest_bitcoin_price: float) -> float:
+        btc_amount = self.raw.get("BTC", 0)
+        gbp_amount = self.raw.get("GBP", 0)
+
+        gbp_to_btc = gbp_amount / latest_bitcoin_price
+        total_portfolio_value_btc = btc_amount + gbp_to_btc
+
+        return (btc_amount / total_portfolio_value_btc) * 100 if total_portfolio_value_btc != 0 else 0
+
+    def get_btc_in_gbp(self, latest_bitcoin_price: float) -> float:
+        btc_amount = self.raw.get("BTC", 0)
+
+        return btc_amount * latest_bitcoin_price
+
 
 class KucoinInterface:
     def __init__(self):
@@ -33,21 +53,39 @@ class KucoinInterface:
         self.user_client = User(key=API_KEY, secret=API_SECRET, passphrase=API_PASSPHRASE, url=URL)
         self.market_client = Market(key=API_KEY, secret=API_SECRET, passphrase=API_PASSPHRASE, url=URL)
 
-    def execute_trade(self, size, side, price):
-        if size == 0:
-            logger.log_info("No trade wanted (trade size = 0)")
+    def execute_trade(self, latest_bitcoin_price: float, bitcoin_holding_percentage_request: float) -> None:
+        portfolio_breakdown = self.get_portfolio_breakdown()
+
+        if bitcoin_holding_percentage_request < 0 or bitcoin_holding_percentage_request > 100:
+            raise ValueError(f"Invalid percentage value '{bitcoin_holding_percentage_request}'")
+
+        current_btc_percentage = portfolio_breakdown.get_btc_percentage(latest_bitcoin_price)
+        difference = bitcoin_holding_percentage_request - current_btc_percentage
+
+        # Check if trade size is too small to bother
+        if abs(difference) < SMALLEST_TRADE_SIZE_PERCENTAGE:
+            logger.log_info("No trade wanted (porfolio change would be ~= 0)")
             return
 
-        # TODO: change to limit order when ready
-        id = f"{str(time.time_ns())[:-5]}_{size}_{side}_{price}"
+        # Calculate trade size based on difference
+        # For simplicity, let's assume trade size is proportional to the difference in percentages
+        btc_in_gbp = portfolio_breakdown.get_btc_in_gbp(latest_bitcoin_price)
+        trade_size_gbp = abs(btc_in_gbp * difference / 100)
+        trade_size_btc = round(trade_size_gbp / latest_bitcoin_price, BTC_INCREMENT_DECIMAL)
+
+        side = "buy" if difference > 0 else "sell"
+
+        timestamp = str(time.time_ns())[:-5]
+        id = f"{timestamp}_{trade_size_btc}_{side}"
 
         try:
+            # Execute trade
             logger.log_info(f"Executing trade: {id}")
-            self.trade_client.create_market_order(clientOid=id, symbol="BTC-GBP", side=side, size=size)
+            self.trade_client.create_market_order(clientOid=id, symbol="BTC-GBP", side=side, size=trade_size_btc)
         except Exception as e:
             if type(e.args) == tuple and "200004" in e.args[0]:
                 logger.log_error(
-                    f"Insufficient funds in kucoin to execute trade. attempted with {size} {side} at £{price}"
+                    f"Insufficient funds in KuCoin to execute trade. Attempted with {trade_size_btc} BTC ({trade_size_gbp} GBP) at market price"
                 )
             else:
                 raise e
@@ -64,8 +102,9 @@ class KucoinInterface:
 
             relevant_data.append(entry)
 
-        logger.log_info(f"Relevant portfolio breakdown: {relevant_data}")
-        return PortfolioBreakdown(relevant_data)
+        portfolio = PortfolioBreakdown(relevant_data)
+        logger.log_info(f"Portfolio breakdown: {portfolio.get_formatted()}")
+        return portfolio
 
     def get_last_trades(self, symbol="BTC-GBP", limit=20) -> List[str]:
         # just look at first page for now as a limit
@@ -95,11 +134,11 @@ if __name__ == "__main__":
     load_dotenv()
     kucoin = KucoinInterface()
 
-    # insufficient funds buy
-    kucoin.execute_trade(100000000, "sell", 9000000)
-
     data = kucoin.get_portfolio_breakdown()
     print(data)
+
+    data.get_btc_percentage()
+    kucoin.execute_trade({"BTC": "100", "GBP": "20000"}, 100.000, 10)
 
     print("----------")
     symbols = kucoin.market_client.get_symbol_list_v2()
