@@ -1,6 +1,8 @@
 from typing import Any, Dict, List
+
+from typess.PortfolioBreakdown import PortfolioBreakdown
 from logger import logger
-from kucoin_interface import KucoinInterface, PortfolioBreakdown
+from kucoin_interface import KucoinInterface
 from crypto_indicators import CryptoIndicators
 from llm_market_monitor import MarketMonitor
 from llm_trader import Trader

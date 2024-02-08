@@ -1,11 +1,11 @@
 import time
-from typing import Dict, Any, Union
+from typing import Dict, Any
 
 import gspread
 from google.auth import default
-from kucoin_interface import PortfolioBreakdown
 
 from logger import logger
+from typess.PortfolioBreakdown import PortfolioBreakdown
 
 
 class DecisionTracker:

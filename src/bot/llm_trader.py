@@ -3,7 +3,7 @@ from typing import Dict, List, Any
 
 from llm_interface import LLMInterface
 from logger import logger
-from kucoin_interface import PortfolioBreakdown
+from typess.PortfolioBreakdown import PortfolioBreakdown
 
 
 class Trader(LLMInterface):

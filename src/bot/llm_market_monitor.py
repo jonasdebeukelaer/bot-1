@@ -1,7 +1,7 @@
 from typing import Dict, Any
 
 from llm_interface import LLMInterface
-from kucoin_interface import PortfolioBreakdown
+from typess.PortfolioBreakdown import PortfolioBreakdown
 
 
 class MarketMonitor(LLMInterface):

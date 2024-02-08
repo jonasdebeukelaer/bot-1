@@ -2,36 +2,13 @@ import os
 import time
 from typing import Any, Dict, List
 
+from typess.PortfolioBreakdown import PortfolioBreakdown
 from kucoin.client import Trade, User, Market
 from logger import logger
 from util import format_value
 
 SMALLEST_TRADE_SIZE_PERCENTAGE = 2
 BTC_INCREMENT_DECIMAL = 4
-
-
-# TODO: move out of this file, possibly do same for other pieces of data?
-class PortfolioBreakdown:
-    def __init__(self, raw: List[Dict]):
-        # convert list to dict
-        self.raw: Dict[str, float] = {entry["currency"]: float(entry["available"]) for entry in raw}
-
-    def get_formatted(self) -> List[str]:
-        return [f"{value} {key}" for key, value in self.raw.items()]
-
-    def get_btc_percentage(self, latest_bitcoin_price: float) -> float:
-        btc_amount = self.raw.get("BTC", 0)
-        gbp_amount = self.raw.get("GBP", 0)
-
-        gbp_to_btc = gbp_amount / latest_bitcoin_price
-        total_portfolio_value_btc = btc_amount + gbp_to_btc
-
-        return (btc_amount / total_portfolio_value_btc) * 100 if total_portfolio_value_btc != 0 else 0
-
-    def get_btc_in_gbp(self, latest_bitcoin_price: float) -> float:
-        btc_amount = self.raw.get("BTC", 0)
-
-        return btc_amount * latest_bitcoin_price
 
 
 class KucoinInterface:
