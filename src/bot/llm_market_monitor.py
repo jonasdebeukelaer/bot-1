@@ -5,6 +5,9 @@ from typess.PortfolioBreakdown import PortfolioBreakdown
 
 
 class MarketMonitor(LLMInterface):
+    def __init__(self, model_name: str):
+        super().__init__(model_name)
+
     def check_market(
         self,
         latest_indicators_hourly: str,

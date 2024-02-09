@@ -7,6 +7,9 @@ from typess.PortfolioBreakdown import PortfolioBreakdown
 
 
 class Trader(LLMInterface):
+    def __init__(self, model_name: str):
+        super().__init__(model_name)
+
     def get_trading_instructions(
         self,
         indicator_history_hourly: str,
@@ -24,6 +27,8 @@ class Trader(LLMInterface):
 
         # TODO add trailing percentages
         #  Last 20 percentages of portfolio in Bitcoin: {portfolio_breakdown.get_percentage("BTC")}
+
+        # TODO is portfolio breakdown useful?
 
         user_message = f"""
         Current time: {current_time}

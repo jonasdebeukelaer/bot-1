@@ -8,8 +8,8 @@ from logger import logger
 
 
 class LLMInterface:
-    def __init__(self):
-        self.model_name = os.environ.get("OPENAI_MODEL_NAME", "gpt-3.5-turbo-1106")
+    def __init__(self, model_name: str):
+        self.model_name = model_name
 
         openai.api_key = os.environ.get("OPENAI_API_KEY")
         if openai.api_key is None:

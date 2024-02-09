@@ -20,8 +20,8 @@ class TradingStrategy:
         self.exchange_interface = exchange_interface
         self.indicators_hourly = indicators_hourly
         self.indicators_daily = indicators_daily
-        self.market_monitor = MarketMonitor()
-        self.trader = Trader()
+        self.market_monitor = MarketMonitor("gpt-3.5-turbo-1106")
+        self.trader = Trader("gpt-4-0125-preview")
         self.decision_tracker = DecisionTracker()
         self.news_extractor = NewsExtractor()
 
