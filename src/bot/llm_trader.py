@@ -62,7 +62,7 @@ class Trader(LLMInterface):
             Your decision should reflect a strategy that aligns with a medium-high risk appetite and leverages current market trends and technical analysis. 
             Provide the % of your porfolio you wish to be in bitcoin. 
             Include detailed reasoning for your decision, specifying how the data influenced your choice. 
-            Highlight any additional data that could improve decision-making or identify any perceived issues with the provided data.
+            Highlight any additional data that could improve decision-making or identify any perceived issues with the provided data in the appropriate fields.
             """,
             "parameters": {
                 "type": "object",
@@ -84,7 +84,7 @@ class Trader(LLMInterface):
                         "description": "Any issues or inconsistencies noticed within the provided data set.",
                     },
                 },
-                "required": ["size", "price", "side", "reasoning"],
+                "required": ["bitcoin_percentage", "reasoning"],
             },
         }
 
