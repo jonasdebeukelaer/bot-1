@@ -93,7 +93,7 @@ class TradingStrategy:
             trading_instructions["bitcoin_percentage"],
         )
         new_portfolio_breakdown = self.exchange_interface.get_portfolio_breakdown()
-        self.decision_tracker.record_portfolio(new_portfolio_breakdown)
+        self.decision_tracker.record_portfolio(new_portfolio_breakdown, latest_bitcoin_price)
         logger.log_info("Trade request executed successfully.")
 
 

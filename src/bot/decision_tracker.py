@@ -48,7 +48,7 @@ class DecisionTracker:
         except ValueError as e:
             logger.log_error(f"ERROR: {e}")
 
-    def record_portfolio(self, portfolio_breakdown: PortfolioBreakdown) -> None:
+    def record_portfolio(self, portfolio_breakdown: PortfolioBreakdown, latest_bitcoin_price: float) -> None:
         dt = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
         account_data = [
@@ -56,6 +56,7 @@ class DecisionTracker:
             portfolio_breakdown.raw["GBP"],
             portfolio_breakdown.raw["BTC"],
             portfolio_breakdown.raw["USDT"],
+            portfolio_breakdown.get_total_value(latest_bitcoin_price),
         ]
 
         try:
@@ -73,9 +74,7 @@ if __name__ == "__main__":
     dt = DecisionTracker()
 
     trade_data = {
-        "size": 0.00001,
-        "price": 10000,
-        "side": "buy",
+        "bitcoin_percentage": 0.00001,
         "reasoning": "TEST REASON",
         "data_request": "TEST DATA REQUEST",
         "data_issues": "TEST DATA ISSUES",
@@ -90,4 +89,4 @@ if __name__ == "__main__":
             {"currency": "GBP", "available": "0"},  # included in response, but gets ignored in here
         ]
     )
-    dt.record_portfolio(raw_portfolio_data)
+    dt.record_portfolio(raw_portfolio_data, 1)
