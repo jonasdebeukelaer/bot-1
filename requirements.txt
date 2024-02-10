@@ -9,3 +9,4 @@ pyopenssl~=23.2.0
 beautifulsoup4~=4.12.2
 gspread~=5.12.0
 feedparser~=6.0.11
+pylint~=3.0.3

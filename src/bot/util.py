@@ -7,5 +7,5 @@ def format_value(val: Any) -> str:
     """
     if isinstance(val, (float, int)) or (isinstance(val, str) and val.replace(".", "", 1).isdigit()):
         return f"{float(val):.5g}"
-    else:
-        return val
+
+    return val

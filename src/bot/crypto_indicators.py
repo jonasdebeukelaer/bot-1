@@ -191,6 +191,7 @@ class CryptoIndicators:
         response = requests.get(
             "https://api.alternative.me/fng/",
             params={"limit": result_count, "date_format": "uk"},
+            timeout=5,
         )
         data = response.json()
 
