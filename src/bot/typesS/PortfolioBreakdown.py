@@ -23,7 +23,7 @@ class PortfolioBreakdown:
 
         return btc_amount * latest_bitcoin_price
 
-    def get_total_value(self, latest_bitcoin_price: float) -> float:
+    def get_total_value_gbp(self, latest_bitcoin_price: float) -> float:
         btc_amount = self.raw.get("BTC", 0)
         gbp_amount = self.raw.get("GBP", 0)
 

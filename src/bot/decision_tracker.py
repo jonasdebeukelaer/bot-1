@@ -56,7 +56,7 @@ class DecisionTracker:
             portfolio_breakdown.raw["GBP"],
             portfolio_breakdown.raw["BTC"],
             portfolio_breakdown.raw["USDT"],
-            portfolio_breakdown.get_total_value(latest_bitcoin_price),
+            portfolio_breakdown.get_total_value_gbp(latest_bitcoin_price),
         ]
 
         try:
