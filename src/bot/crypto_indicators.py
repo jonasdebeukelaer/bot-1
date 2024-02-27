@@ -3,8 +3,8 @@ import requests
 from collections import deque
 from typing import Any, Dict
 
-from logger import logger
-from util import format_value
+from src.bot.logger import logger
+from src.bot.util import format_value
 
 MAX_INDICATOR_HISTORY = 10
 
@@ -117,7 +117,8 @@ class CryptoIndicators:
         #         indicator_value = formatted_results
         #     indicators[indicator_name] = indicator_value
 
-        self.indicator_history.appendleft(indicator_history)
+        # self.indicator_history.appendleft(indicator_history)
+        raise NotImplementedError
 
     def _get_taapi_indicators(self, result_count: int = 1) -> Any:
         # Define the construct

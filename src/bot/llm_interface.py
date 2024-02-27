@@ -4,7 +4,7 @@ from typing import List, Dict, Any
 
 import openai
 
-from logger import logger
+from src.bot.logger import logger
 
 
 class LLMInterface:

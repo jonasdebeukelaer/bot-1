@@ -1,6 +1,6 @@
 from typing import Dict, Any
 
-from llm_interface import LLMInterface
+from src.bot.llm_interface import LLMInterface
 from typess.PortfolioBreakdown import PortfolioBreakdown
 
 

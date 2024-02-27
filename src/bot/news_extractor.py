@@ -1,6 +1,7 @@
 from typing import Dict, List
-import feedparser
 import re
+
+import feedparser
 
 # see https://www.google.com/alerts# for setup
 RSS_FEED_URL = "https://www.google.com/alerts/feeds/08285277604393949885/9336531935903264427"

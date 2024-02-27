@@ -2,10 +2,11 @@ import os
 import time
 from typing import Any, Dict, List
 
-from typess.PortfolioBreakdown import PortfolioBreakdown
 from kucoin.client import Trade, User, Market
 from logger import logger
 from util import format_value
+
+from src.bot.typess.PortfolioBreakdown import PortfolioBreakdown
 
 SMALLEST_TRADE_SIZE_PERCENTAGE = 2
 BTC_INCREMENT_DECIMAL = 4

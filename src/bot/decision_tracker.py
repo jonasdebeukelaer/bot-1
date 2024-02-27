@@ -4,8 +4,8 @@ from typing import Dict, Any
 import gspread
 from google.auth import default
 
-from logger import logger
-from typess.PortfolioBreakdown import PortfolioBreakdown
+from src.bot.logger import logger
+from src.bot.typess.PortfolioBreakdown import PortfolioBreakdown
 
 
 class DecisionTracker:
