@@ -4,9 +4,9 @@ import signal
 
 from dotenv import load_dotenv
 
-from src.bot.kucoin_interface import KucoinInterface
-from src.bot.trading_strategy import TradingStrategy
-from src.bot.crypto_indicators import CryptoIndicators
+from kucoin_interface import KucoinInterface
+from trading_strategy import TradingStrategy
+from crypto_indicators import CryptoIndicators
 
 ONE_HOUR = 3600
 
