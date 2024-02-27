@@ -9,6 +9,7 @@ from typess.PortfolioBreakdown import PortfolioBreakdown
 class Trader(LLMInterface):
     def __init__(self, model_name: str):
         super().__init__(model_name)
+        self.previous_bitcoin_percentage: int = 0
 
     def get_trading_instructions(
         self,
@@ -45,7 +46,15 @@ class Trader(LLMInterface):
 
         Latest Bitcoin and cryptocurrency news: {news}
 
-        Based on the information provided, recommend a good perentage of bitcoin to hold in our portfolio.
+        Your current bitcoin holding percentage is: {self.previous_bitcoin_percentage}%
+
+        Based on the information provided, recommend a good perentage of bitcoin to hold in our portfolio. Take into consideration that trading fees are 0.1% for both buying and selling, and the proportion of your portfolio which is already bitcoin.
+
+        Analyze the latest market data, including price movements, indicators, and news, to make a trading decision. 
+        Your decision should reflect a strategy that aligns with a medium-high risk appetite and leverages current market trends and technical analysis. 
+        Provide the percentage of your porfolio you wish to be in bitcoin. 
+        Include detailed reasoning for your decision, specifying how the data influenced your choice.
+        Highlight any additional data that could improve decision-making or identify any perceived issues with the provided data in the 'data_request' and 'data_issues' return fields respectively.
         """
 
         logger.log_info("Message sent to LLM: " + user_message)
@@ -57,13 +66,7 @@ class Trader(LLMInterface):
 
         function = {
             "name": "decide_portfolio_breakdown",
-            "description": """
-            Analyze the latest market data, including price movements, indicators, and news, to make a trading decision. 
-            Your decision should reflect a strategy that aligns with a medium-high risk appetite and leverages current market trends and technical analysis. 
-            Provide the percentage of your porfolio you wish to be in bitcoin. 
-            Include detailed reasoning for your decision, specifying how the data influenced your choice.
-            Highlight any additional data that could improve decision-making or identify any perceived issues with the provided data in the appropriate return fields.
-            """,
+            "description": "expected return format",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -88,4 +91,9 @@ class Trader(LLMInterface):
             },
         }
 
-        return self.send_messages(messages, function)
+        trading_instructions = self.send_messages(messages, function)
+
+        # set previous bitcoin percentage for next call
+        self.previous_bitcoin_percentage = trading_instructions["bitcoin_percentage"]
+
+        return trading_instructions
