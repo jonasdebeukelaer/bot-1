@@ -15,3 +15,4 @@ Does stuff I want it to do mind your own business!!1!
 - [ ] fix pylint errors
 - [ ] include current portfolio total value over time as data input
 - [ ] include portfolio bitcoin percentage over time (get from sheets?)
+- [x] include previous % and transaction costs
