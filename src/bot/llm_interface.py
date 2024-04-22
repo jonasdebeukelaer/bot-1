@@ -4,7 +4,6 @@ from typing import List, Dict, Any
 
 import openai
 import litellm
-from litellm import completion
 
 from logger import logger
 
@@ -21,7 +20,7 @@ class LLMInterface:
     def send_messages(self, messages: List[Dict], tool: Dict) -> Dict[str, Any]:
         logger.log_debug(f"Sending messages to OpenAI API: {messages}")
         try:
-            resp = completion(
+            resp = litellm.completion(
                 model=self.model_name,
                 messages=messages,
                 tools=[tool],

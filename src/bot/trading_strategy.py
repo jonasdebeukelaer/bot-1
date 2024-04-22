@@ -104,5 +104,8 @@ if __name__ == "__main__":
 
     ci = CryptoIndicators()
     ci.fetch_indicators()
-    ts = TradingStrategy(KucoinInterface(), ci)
+
+    ci_daily = CryptoIndicators(interval="1d")
+    ci_daily.fetch_indicators()
+    ts = TradingStrategy(KucoinInterface(), ci, ci_daily)
     ts.execute()
