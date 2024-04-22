@@ -64,34 +64,37 @@ class Trader(LLMInterface):
             {"role": "user", "content": user_message},
         ]
 
-        function = {
-            "name": "decide_portfolio_breakdown",
-            "description": "expected return format",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "bitcoin_percentage": {
-                        "type": "number",
-                        "description": "The percentage of the portfolio to hold in Bitcoin (0-100). The rest will be held as GBP.",
+        tool = {
+            "type": "function",
+            "function": {
+                "name": "decide_portfolio_breakdown",
+                "description": "expected return format",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "bitcoin_percentage": {
+                            "type": "number",
+                            "description": "The percentage of the portfolio to hold in Bitcoin (0-100). The rest will be held as GBP.",
+                        },
+                        "reasoning": {
+                            "type": "string",
+                            "description": "A detailed explanation of the decision-making process, including the analysis of market data and how it fits with the trading strategy.",
+                        },
+                        "data_request": {
+                            "type": "string",
+                            "description": "Any additional information that would aid in making a more informed trading decision.",
+                        },
+                        "data_issues": {
+                            "type": "string",
+                            "description": "Any issues or inconsistencies noticed within the provided data set.",
+                        },
                     },
-                    "reasoning": {
-                        "type": "string",
-                        "description": "A detailed explanation of the decision-making process, including the analysis of market data and how it fits with the trading strategy.",
-                    },
-                    "data_request": {
-                        "type": "string",
-                        "description": "Any additional information that would aid in making a more informed trading decision.",
-                    },
-                    "data_issues": {
-                        "type": "string",
-                        "description": "Any issues or inconsistencies noticed within the provided data set.",
-                    },
+                    "required": ["bitcoin_percentage", "reasoning", "data_request", "data_issues"],
                 },
-                "required": ["bitcoin_percentage", "reasoning", "data_request", "data_issues"],
             },
         }
 
-        trading_instructions = self.send_messages(messages, function)
+        trading_instructions = self.send_messages(messages, tool)
 
         # set previous bitcoin percentage for next call
         self.previous_bitcoin_percentage = trading_instructions["bitcoin_percentage"]
