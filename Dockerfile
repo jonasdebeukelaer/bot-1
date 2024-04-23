@@ -1,4 +1,4 @@
-FROM python:3.8.6-slim AS base
+FROM python:3.11.9-slim AS base
 
 RUN apt-get update && \
     apt-get install -y curl jq wget git build-essential ca-certificates && \
