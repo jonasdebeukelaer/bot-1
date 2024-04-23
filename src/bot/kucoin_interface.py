@@ -8,7 +8,7 @@ from util import format_value
 
 from typess.PortfolioBreakdown import PortfolioBreakdown
 
-SMALLEST_TRADE_SIZE_PERCENTAGE = 2
+SMALLEST_TRADE_SIZE_PERCENTAGE = 10
 BTC_INCREMENT_DECIMAL = 4
 
 
@@ -42,7 +42,7 @@ class KucoinInterface:
 
         # Check if trade size is too small to bother
         if abs(difference) < SMALLEST_TRADE_SIZE_PERCENTAGE:
-            logger.log_info("No trade wanted (porfolio change would be ~= 0)")
+            logger.log_info("No trade wanted (porfolio change would be < 10%). Avoiding these small changes to save on fees.")
             return
 
         # Calculate trade size based on difference
