@@ -1,9 +1,9 @@
 import time
 from typing import Dict, List, Any
 
-from llm_interface import LLMInterface
-from logger import logger
-from typess.PortfolioBreakdown import PortfolioBreakdown
+from src.bot.llm_interface import LLMInterface
+from src.bot.logger import logger
+from src.bot.typess.PortfolioBreakdown import PortfolioBreakdown
 
 
 class Trader(LLMInterface):

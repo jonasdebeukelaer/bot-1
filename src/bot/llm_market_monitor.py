@@ -1,7 +1,7 @@
 from typing import Dict, Any
 
-from llm_interface import LLMInterface
-from typess.PortfolioBreakdown import PortfolioBreakdown
+from src.bot.llm_interface import LLMInterface
+from src.bot.typess.PortfolioBreakdown import PortfolioBreakdown
 
 
 class MarketMonitor(LLMInterface):

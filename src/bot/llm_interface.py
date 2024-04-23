@@ -5,7 +5,7 @@ from typing import List, Dict, Any
 import openai
 import litellm
 
-from logger import logger
+from src.bot.logger import logger
 
 litellm.add_function_to_prompt = True
 

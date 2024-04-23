@@ -3,8 +3,8 @@ import requests
 from collections import deque
 from typing import Any, Dict
 
-from logger import logger
-from util import format_value
+from src.bot.logger import logger
+from src.bot.util import format_value
 
 MAX_INDICATOR_HISTORY = 10
 
