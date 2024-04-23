@@ -14,4 +14,4 @@ litellm~=1.35.18
 
 # --- testing ---
 pytest~=8.0.1
-pytest-mock-3.14.0
+pytest-mock~=3.14.0
