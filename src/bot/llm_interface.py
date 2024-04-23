@@ -14,8 +14,10 @@ class LLMInterface:
     def __init__(self, model_name: str):
         self.model_name = model_name
 
-        if os.environ.get("OPENAI_API_KEY") is None:
+        if "gpt" in model_name and os.environ.get("OPENAI_API_KEY") is None:
             raise ValueError("OPENAI_API_KEY is not set in the environment variables")
+        elif "groq" in model_name and os.environ.get("GROQ_API_KEY") is None:
+            raise ValueError("GROQ_API_KEY is not set in the environment variables")
 
     def send_messages(self, messages: List[Dict], tool: Dict) -> Dict[str, Any]:
         logger.log_debug(f"Sending messages to OpenAI API: {messages}")
@@ -33,16 +35,14 @@ class LLMInterface:
             return response_arguments
 
         except KeyError as ke:
-            logger.log_error(f"KeyError during LLM response parsing: {ke} \nRaw response: {resp}")
+            logger.log_error(f"KeyError during LLM response parsing: {ke}")
             raise
         except ValueError as ve:
-            logger.log_error(f"ValueError during LLM response parsing: {ve} \nRaw response: {resp}")
+            logger.log_error(f"ValueError during LLM response parsing: {ve}")
             raise
         except openai.OpenAIError as oe:
-            logger.log_error(f"OpenAIError during LLM API call: {oe} \nRaw response: {resp}")
+            logger.log_error(f"OpenAIError during LLM API call: {oe}")
             raise
         except Exception as e:
-            logger.log_error(
-                f"An unexpected error occurred during trading instructions retrieval: {e} \nRaw response: {resp}"
-            )
+            logger.log_error(f"An unexpected error occurred during trading instructions retrieval: {e}")
             raise

@@ -72,13 +72,13 @@ class Trader(LLMInterface):
                 "parameters": {
                     "type": "object",
                     "properties": {
-                        "bitcoin_percentage": {
-                            "type": "number",
-                            "description": "The percentage of the portfolio to hold in Bitcoin (0-100). The rest will be held as GBP.",
-                        },
                         "reasoning": {
                             "type": "string",
                             "description": "A detailed explanation of the decision-making process, including the analysis of market data and how it fits with the trading strategy.",
+                        },
+                        "bitcoin_percentage": {
+                            "type": "number",
+                            "description": "The percentage of the portfolio to hold in Bitcoin (0-100). The rest will be held as GBP.",
                         },
                         "data_request": {
                             "type": "string",
