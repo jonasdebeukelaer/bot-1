@@ -55,7 +55,7 @@ class DecisionTracker:
             dt,
             portfolio_breakdown.raw["GBP"],
             portfolio_breakdown.raw["BTC"],
-            portfolio_breakdown.raw["USDT"],
+            "-",
             portfolio_breakdown.get_total_value_gbp(latest_bitcoin_price),
         ]
 
@@ -85,7 +85,6 @@ if __name__ == "__main__":
         [
             {"currency": "GBP", "available": "1.62"},
             {"currency": "BTC", "available": "0.00000001"},
-            {"currency": "USDT", "available": "0.00000002"},
             {"currency": "GBP", "available": "0"},  # included in response, but gets ignored in here
         ]
     )
