@@ -73,7 +73,7 @@ class KucoinInterface:
 
         relevant_data = []
         for entry in data:
-            if entry["currency"] not in ["GBP", "USDT", "BTC"]:
+            if entry["currency"] not in ["GBP", "BTC"]:
                 continue
             elif entry["balance"] == "0" or entry["available"] == "0":
                 continue
