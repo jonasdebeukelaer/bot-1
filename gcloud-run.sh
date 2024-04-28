@@ -17,7 +17,7 @@ python src/dummy_server.py 8080 &
 
 echo ""
 echo "Start application..."
-python -m src.bot.main
+PYTHONNODEBUGRANGES=0 python -m src.bot.main
 
 echo ""
 echo "Stopped gracefully!"
