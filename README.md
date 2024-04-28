@@ -10,7 +10,7 @@ Does stuff I want it to do mind your own business!!1!
 - [ ] twitter? (costly)
 - [ ] look at https://www.forexfactory.com/calendar?week=nov12.2023 for addition data
 - [ ] ** backfill indicator data on start up?
-- [ ] move tests to actual testing dir
+- [:] move tests to actual testing dir
 - [ ] add tests with mocking
 - [ ] fix pylint errors
 - [ ] include current portfolio total value over time as data input
