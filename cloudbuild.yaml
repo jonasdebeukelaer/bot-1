@@ -24,6 +24,7 @@ steps:
         --platform managed \
         --no-allow-unauthenticated \
         --cpu 1 \
+        --no-cpu-throttling \
         --memory 2Gi \
         --min-instances 1 \
         --max-instances 1 \
