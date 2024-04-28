@@ -9,7 +9,7 @@ from src.bot.typess.PortfolioBreakdown import PortfolioBreakdown
 class Trader(LLMInterface):
     def __init__(self, model_name: str):
         super().__init__(model_name)
-        self.previous_bitcoin_percentage: int = 0
+        self.previous_bitcoin_percentage: int = -1
 
     def get_trading_instructions(
         self,
@@ -46,12 +46,12 @@ class Trader(LLMInterface):
 
         Latest Bitcoin and cryptocurrency news: {news}
 
-        Your current bitcoin holding percentage is: {self.previous_bitcoin_percentage}%
+        Your current bitcoin holding percentage is: {self.previous_bitcoin_percentage if self.previous_bitcoin_percentage != 0 else 'unknown'}%
 
         Based on the information provided, recommend a good perentage of bitcoin to hold in our portfolio. Take into consideration that trading fees are 0.1% for both buying and selling, and the proportion of your portfolio which is already bitcoin.
 
         Analyze the latest market data, including price movements, indicators, and news, to make a trading decision. 
-        Your decision should reflect a strategy that aligns with a medium-high risk appetite and leverages current market trends and technical analysis. 
+        Your decision should reflect a strategy that aligns with a medium-high risk appetite and leverages current market trends and technical analysis. You should aim to maximise profits in the long term (~1 year).
         Provide the percentage of your porfolio you wish to be in bitcoin. 
         Include detailed reasoning for your decision, specifying how the data influenced your choice.
         Highlight any additional data that could improve decision-making or identify any perceived issues with the provided data in the 'data_request' and 'data_issues' return fields respectively.
