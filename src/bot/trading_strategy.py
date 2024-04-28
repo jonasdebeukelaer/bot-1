@@ -4,7 +4,6 @@ from src.bot.typess.PortfolioBreakdown import PortfolioBreakdown
 from src.bot.logger import logger
 from src.bot.kucoin_interface import KucoinInterface
 from src.bot.crypto_indicators import CryptoIndicators
-from src.bot.llm_market_monitor import MarketMonitor
 from src.bot.llm_trader import Trader
 from src.bot.decision_tracker import DecisionTracker
 from src.bot.news_extractor import NewsExtractor
@@ -20,7 +19,6 @@ class TradingStrategy:
         self.exchange_interface = exchange_interface
         self.indicators_hourly = indicators_hourly
         self.indicators_daily = indicators_daily
-        # self.market_monitor = MarketMonitor("gpt-3.5-turbo-1106")
         self.trader = Trader("groq/llama3-70b-8192")
         self.decision_tracker = DecisionTracker()
         self.news_extractor = NewsExtractor()
@@ -42,17 +40,6 @@ class TradingStrategy:
         logger.log_info("Getting latest news...")
         news = self.news_extractor.get_news()
 
-        # logger.log_info("Checking market...")
-        # latest_indicators_hourly = self.indicators_hourly.get_formatted_latest_indicator_set()
-        # latest_indicators_daily = self.indicators_daily.get_formatted_latest_indicator_set()
-        # answer = self.market_monitor.check_market(
-        #     latest_indicators_hourly, latest_indicators_daily, portfolio_breakdown, news
-        # )
-
-        # log_msg = "Decided to call GPT4: {}. Reasoning: {}".format(answer["should_call"], answer["reasoning"])
-        # logger.log_info(log_msg)
-
-        # if answer["should_call"]:
         logger.log_info("Calling LLM for trade decision...")
         self._make_trade_decision(
             portfolio_breakdown,
@@ -61,8 +48,6 @@ class TradingStrategy:
             news,
             self.indicators_hourly.get_latest_price(),
         )
-        # else:
-        #     logger.log_info("No trade decision requested by gpt3.5.")
 
         logger.log_info("Finished execution\n")
 
