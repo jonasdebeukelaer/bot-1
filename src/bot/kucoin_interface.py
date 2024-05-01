@@ -31,7 +31,7 @@ class KucoinInterface:
         self.user_client = User(key=API_KEY, secret=API_SECRET, passphrase=API_PASSPHRASE, url=URL)
         self.market_client = Market(key=API_KEY, secret=API_SECRET, passphrase=API_PASSPHRASE, url=URL)
 
-    def execute_trade(self, latest_bitcoin_price: float, bitcoin_holding_percentage_request: float) -> None:
+    def execute_trade(self, latest_bitcoin_price: float, bitcoin_holding_percentage_request: int) -> None:
         portfolio_breakdown = self.get_portfolio_breakdown()
 
         if bitcoin_holding_percentage_request < 0 or bitcoin_holding_percentage_request > 100:

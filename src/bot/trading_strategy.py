@@ -1,5 +1,6 @@
 from typing import Any, Dict, List
 
+from src.bot.typess.TraderInputData import TraderInputData
 from src.bot.typess.PortfolioBreakdown import PortfolioBreakdown
 from src.bot.logger import logger
 from src.bot.kucoin_interface import KucoinInterface
@@ -19,7 +20,7 @@ class TradingStrategy:
         self.exchange_interface = exchange_interface
         self.indicators_hourly = indicators_hourly
         self.indicators_daily = indicators_daily
-        self.trader = Trader("groq/llama3-70b-8192")
+        self.trader = Trader()
         self.decision_tracker = DecisionTracker()
         self.news_extractor = NewsExtractor()
 
@@ -59,8 +60,9 @@ class TradingStrategy:
         news: str,
         latest_bitcoin_price: float,
     ) -> None:
-        logger.log_info("Calling GPT4 for trading decision...")
-        trading_instructions = self.trader.get_trading_instructions(
+        logger.log_info("Calling LLM for trading decision...")
+
+        trading_input_data = TraderInputData(
             self.indicators_hourly.get_formatted_indicator_history(),
             self.indicators_daily.get_formatted_indicator_history(),
             portfolio_breakdown,
@@ -69,14 +71,16 @@ class TradingStrategy:
             news,
         )
 
-        log_msg = "Received trade instructions: {}".format(trading_instructions)
+        trader_resp = self.trader(trading_input_data)
+
+        log_msg = "Received trade instructions: {}".format(str(trader_resp))
         logger.log_info(log_msg)
 
-        self.decision_tracker.record_trade_instructions(trading_instructions)
+        self.decision_tracker.record_trade_instructions(trader_resp)
 
         self.exchange_interface.execute_trade(
             latest_bitcoin_price,
-            trading_instructions["bitcoin_percentage"],
+            trader_resp.trading_decision,
         )
         new_portfolio_breakdown = self.exchange_interface.get_portfolio_breakdown()
         self.decision_tracker.record_portfolio(new_portfolio_breakdown, latest_bitcoin_price)

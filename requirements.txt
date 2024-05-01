@@ -10,7 +10,7 @@ beautifulsoup4~=4.12.2
 gspread~=5.12.0
 feedparser~=6.0.11
 pylint~=3.0.3
-litellm~=1.35.18
+dspy-ai~=2.4.9
 
 # --- testing ---
 pytest~=8.0.1
