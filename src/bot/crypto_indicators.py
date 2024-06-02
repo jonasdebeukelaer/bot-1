@@ -76,7 +76,7 @@ class CryptoIndicators:
             formatted_message = f"symbol: {self.symbol}, interval: {self.interval}, exchange: {self.exchange}\n{formatted_latest_indicator_set}"
             return formatted_message
         else:
-            return {}
+            return ""
 
     def get_formatted_indicator_history(self) -> str:
         formatted_history = ""
@@ -152,13 +152,13 @@ class CryptoIndicators:
                     "results": result_count,
                     "addResultTimestamp": False,
                 },
-                {
-                    "id": "800EMA",
-                    "indicator": "ema",
-                    "period": 800,
-                    "results": result_count,
-                    "addResultTimestamp": False,
-                },
+                # { TODO: this is requiring too many candles to generate? error: {"error":"Your request requires too many candles to complete. We do not allow requests to be calculated with a larger candle set than 1000. Your request requires 1400"}
+                #     "id": "400EMA",
+                #     "indicator": "ema",
+                #     "period": 400,
+                #     "results": result_count,
+                #     "addResultTimestamp": False,
+                # },
                 {
                     "id": "RSI",
                     "indicator": "rsi",
