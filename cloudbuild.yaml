@@ -23,9 +23,10 @@ steps:
         --region europe-west1 \
         --platform managed \
         --no-allow-unauthenticated \
-        --cpu 1 \
+        --cpu 0.2 \
+        --cpu-boost \
         --no-cpu-throttling \
-        --memory 2Gi \
+        --memory 512Mi \
         --min-instances 1 \
         --max-instances 1 \
         --set-secrets /mnt2/secrets.env=crypto-gpt-env-secrets:8
