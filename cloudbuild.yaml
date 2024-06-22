@@ -24,8 +24,7 @@ steps:
         --platform managed \
         --no-allow-unauthenticated \
         --concurrency 1 \
-        --cpu 0.2 \
-        --cpu-boost \
+        --cpu 1 \
         --no-cpu-throttling \
         --memory 512Mi \
         --min-instances 1 \
