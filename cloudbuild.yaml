@@ -23,6 +23,7 @@ steps:
         --region europe-west1 \
         --platform managed \
         --no-allow-unauthenticated \
+        --concurrency 1 \
         --cpu 0.2 \
         --cpu-boost \
         --no-cpu-throttling \
