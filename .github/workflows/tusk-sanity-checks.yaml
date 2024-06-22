@@ -1,4 +1,4 @@
-name: Python Code Formatting
+name: Tusk Sanity Check
 
 on:
   workflow_dispatch: # Use workflow_dispatch because Tusk will trigger this on its own
