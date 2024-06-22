@@ -20,6 +20,19 @@ echo ""
 echo "Streaming build logs:"
 gcloud builds log $BUILD_ID --region $REGION --stream
 
+# Polling the build status
+while : ; do
+    BUILD_STATUS=$(gcloud builds describe $BUILD_ID --region $REGION --format="value(status)")
+    if [[ $BUILD_STATUS != "WORKING" && $BUILD_STATUS != "QUEUED" ]]; then
+        break
+    fi
+    echo "Build is still in progress... checking again in 10 seconds."
+    sleep 10
+done
 
-# TODO: fix still says successful even if fails
-# echo "Deployment completed successfully."
+if [[ $BUILD_STATUS == "SUCCESS" ]]; then
+    echo "Deploy successful"
+else 
+    echo "DEPLOY FAILED"
+    exit 1
+fi
