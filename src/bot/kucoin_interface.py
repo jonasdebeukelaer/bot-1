@@ -42,7 +42,9 @@ class KucoinInterface:
 
         # Check if trade size is too small to bother
         if abs(difference) < SMALLEST_TRADE_SIZE_PERCENTAGE:
-            logger.log_info("No trade wanted (porfolio change would be < 10%). Avoiding these small changes to save on fees.")
+            logger.log_info(
+                "No trade wanted (porfolio change would be < 10%). Avoiding these small changes to save on fees."
+            )
             return
 
         # Calculate trade size based on difference

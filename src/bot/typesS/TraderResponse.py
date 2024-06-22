@@ -7,7 +7,7 @@ class TraderResponse:
 
     def get_trading_decision(self) -> int:
         return self.trading_decision
-    
+
     def get_decision_rationale(self) -> str:
         return self.decision_rationale if self.decision_rationale else "-"
 

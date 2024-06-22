@@ -49,7 +49,6 @@ class DataQualityCheckSig(dspy.Signature):
 
 
 class Trader(dspy.Module):
-
     def __init__(self, trader_count: int = 2):
         super().__init__()
 
@@ -75,7 +74,6 @@ class Trader(dspy.Module):
         self.trader_count = trader_count
 
     def forward(self, trading_input_data: TraderInputData) -> TraderResponse:
-
         context = self.build_context(trading_input_data)
 
         trade_decisions = [self.get_trade_decision(context=context)]
