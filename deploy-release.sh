@@ -13,13 +13,19 @@ fi
 gcloud config set project $PROJECT_ID
 
 # Submit a new build to Cloud Build
-BUILD_ID=$(gcloud builds submit --config cloudbuild.yaml . --async --format="value(id)" --region $REGION)
+BUILD_ID=$(gcloud builds submit --config cloudbuild.yaml . --format="value(id)" --region $REGION)
 echo "Deployment started (Build ID: $BUILD_ID)."
 
 echo ""
 echo "Streaming build logs:"
 gcloud builds log $BUILD_ID --region $REGION --stream
 
+# Get the status of the completed build
+BUILD_STATUS=$(gcloud builds describe $BUILD_ID --region $REGION --format="value(status)")
 
-# TODO: fix still says successful even if fails
-# echo "Deployment completed successfully."
+if [[ $BUILD_STATUS == "SUCCESS" ]]; then
+    echo "Deploy successful"
+else 
+    echo "DEPLOY FAILED"
+    exit 1
+fi
