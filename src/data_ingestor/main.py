@@ -1,3 +1,4 @@
+import os
 from venv import logger
 
 from crypto_indicators import CryptoIndicators
@@ -9,11 +10,15 @@ from dotenv import load_dotenv
 import functions_framework
 from flask import Request
 
-load_dotenv()
-
 
 @functions_framework.http
-def main(request: Request):
+def function_entry_point(request: Request):
+    _load_secrets()
+    main()
+    return "Data ingestion completed.", 200
+
+
+def main():
     logger.info("Starting data ingestion...")
 
     logger.info("Initialising firestore connection...")
@@ -29,6 +34,14 @@ def main(request: Request):
     _fetch_and_store_news(db, news_extractor)
 
     logger.info("Data ingestion completed.")
+
+
+def _load_secrets():
+    with open('/mnt2/secrets.env', 'r') as src_file:
+        with open('.env', 'w') as dest_file:
+            dest_file.write(src_file.read())
+
+    load_dotenv()
 
 
 def _fetch_and_store_taapi_data(db, crypto_indicators, interval):
@@ -58,4 +71,5 @@ def _fetch_and_store_news(db, news_extractor):
 
 
 if __name__ == "__main__":
-    main(Request(environ={}))
+    load_dotenv()
+    main()
