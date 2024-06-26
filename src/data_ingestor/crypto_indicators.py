@@ -2,7 +2,7 @@ import os
 import requests
 from typing import Dict, Any
 
-from src.data_ingestion.logger import logger
+from src.data_ingestor.logger import logger
 
 
 class CryptoIndicators:

@@ -1,8 +1,8 @@
 from venv import logger
 
-from src.data_ingestion.crypto_indicators import CryptoIndicators
-from src.data_ingestion.news_extractor import NewsExtractor
-from src.data_ingestion.logger import logger
+from src.data_ingestor.crypto_indicators import CryptoIndicators
+from src.data_ingestor.news_extractor import NewsExtractor
+from src.data_ingestor.logger import logger
 
 from google.cloud import firestore
 from dotenv import load_dotenv
