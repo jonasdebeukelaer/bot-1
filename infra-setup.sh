@@ -26,3 +26,29 @@ gcloud projects add-iam-policy-binding "$PROJECT_ID" \
 gcloud secrets add-iam-policy-binding ${ENV_VAR_SECRETS_NAME} \
   --member "serviceAccount:${SERVICE_ACCOUNT}" \
   --role roles/secretmanager.secretAccessor
+
+# service account for cloud scheduler
+gcloud iam service-accounts create scheduler-invoker \
+        --display-name "Cloud Scheduler Invoker" 2>/dev/null
+
+# allow cloud scheduler to invoke cloud functions
+gcloud functions add-invoker-policy-binding data-ingestor \
+      --region="europe-west1" \
+      --member "serviceAccount:scheduler-invoker@${PROJECT_ID}.iam.gserviceaccount.com"
+gcloud functions add-invoker-policy-binding bot \
+      --region="europe-west1" \
+      --member "serviceAccount:scheduler-invoker@${PROJECT_ID}.iam.gserviceaccount.com"
+
+# create scheduler jobs
+gcloud scheduler jobs create http data-ingestor-scheduler-job \
+        --schedule "25,55 * * * *" \
+        --http-method POST \
+        --uri "https://europe-west1-crypto-gpt-69.cloudfunctions.net/data-ingestor" \
+        --oidc-service-account-email "scheduler-invoker@${PROJECT_ID}.iam.gserviceaccount.com" \
+        --time-zone "Etc/UTC"
+gcloud scheduler jobs create http bot-scheduler-job \
+        --schedule "59 * * * *" \
+        --http-method POST \
+        --uri "https://europe-west1-crypto-gpt-69.cloudfunctions.net/bot" \
+        --oidc-service-account-email "scheduler-invoker@${PROJECT_ID}.iam.gserviceaccount.com" \
+        --time-zone "Etc/UTC"
