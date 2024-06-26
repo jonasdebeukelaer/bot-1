@@ -3,9 +3,9 @@ import time
 
 import dspy
 
-from src.bot.logger import logger
-from src.bot.typess.TraderInputData import TraderInputData
-from src.bot.typess.TraderResponse import TraderResponse
+from logger import logger
+from typess.TraderInputData import TraderInputData
+from typess.TraderResponse import TraderResponse
 
 
 class TradeDecisionSig(dspy.Signature):

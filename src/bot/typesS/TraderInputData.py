@@ -1,6 +1,6 @@
 from typing import List, Dict, Any
 
-from src.bot.typess.PortfolioBreakdown import PortfolioBreakdown
+from typess.PortfolioBreakdown import PortfolioBreakdown
 
 
 class TraderInputData:

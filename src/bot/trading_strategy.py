@@ -1,13 +1,13 @@
 from typing import Any, Dict, List
 
-from src.bot.typess.TraderInputData import TraderInputData
-from src.bot.typess.PortfolioBreakdown import PortfolioBreakdown
-from src.bot.logger import logger
-from src.bot.kucoin_interface import KucoinInterface
-from src.bot.crypto_indicators import CryptoIndicators
-from src.bot.llm_trader import Trader
-from src.bot.decision_tracker import DecisionTracker
-from src.bot.news_extractor import NewsExtractor
+from typess.TraderInputData import TraderInputData
+from typess.PortfolioBreakdown import PortfolioBreakdown
+from logger import logger
+from kucoin_interface import KucoinInterface
+from crypto_indicators import CryptoIndicators
+from llm_trader import Trader
+from decision_tracker import DecisionTracker
+from news_extractor import NewsExtractor
 
 
 class TradingStrategy:

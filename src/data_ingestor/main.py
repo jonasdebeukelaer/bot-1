@@ -37,8 +37,8 @@ def main():
 
 
 def _load_secrets():
-    with open('/mnt2/secrets.env', 'r') as src_file:
-        with open('.env', 'w') as dest_file:
+    with open("/mnt2/secrets.env", "r") as src_file:
+        with open(".env", "w") as dest_file:
             dest_file.write(src_file.read())
 
     load_dotenv()

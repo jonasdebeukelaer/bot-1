@@ -3,9 +3,9 @@ import time
 import gspread
 from google.auth import default
 
-from src.bot.logger import logger
-from src.bot.typess.PortfolioBreakdown import PortfolioBreakdown
-from src.bot.llm_trader import TraderResponse
+from logger import logger
+from typess.PortfolioBreakdown import PortfolioBreakdown
+from llm_trader import TraderResponse
 
 
 class DecisionTracker:
