@@ -73,6 +73,10 @@ class KucoinInterface:
     def get_portfolio_breakdown(self) -> PortfolioBreakdown:
         data = self.user_client.get_account_list()
 
+        if type(data) != list:
+            logger.log_error("Failed to get account list")
+            return PortfolioBreakdown([])
+
         relevant_data = []
         for entry in data:
             if entry["currency"] not in ["GBP", "BTC"]:
@@ -90,6 +94,11 @@ class KucoinInterface:
         # just look at first page for now as a limit
         # NOTE: built in limit of up to 1 week old trades only
         data = self.trade_client.get_fill_list(tradeType="TRADE", symbol=symbol, pageSize=limit)
+
+        if type(data) != dict:
+            logger.log_error(f"Failed to get trades for {symbol}")
+            return []
+
         formatted = []
         for item in data["items"]:
             ts = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(item["createdAt"] / 1000))
@@ -100,11 +109,16 @@ class KucoinInterface:
 
     def get_part_order_book(self, symbol="BTC-GBP", pieces=20) -> Dict[str, Any]:
         data = self.market_client.get_part_order(symbol=symbol, pieces=pieces)
-        data["timestamp"] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(data["time"] / 1000))
-        del data["time"], data["sequence"]
 
-        logger.log_info(f"Order book for {symbol}: {data}")
-        return data
+        if type(data) == dict:
+            data["timestamp"] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(data["time"] / 1000))
+            del data["time"], data["sequence"]
+
+            logger.log_info(f"Order book for {symbol}: {data}")
+            return data
+        else:
+            logger.log_error(f"Order book for {symbol} not found")
+            return {}
 
 
 # test
@@ -117,14 +131,15 @@ if __name__ == "__main__":
     data = kucoin.get_portfolio_breakdown()
     print(data)
 
-    data.get_btc_percentage()
-    kucoin.execute_trade({"BTC": "100", "GBP": "20000"}, 100.000, 10)
+    data.get_btc_percentage(1000.0)
+    kucoin.execute_trade(100.000, 10)
 
     print("----------")
     symbols = kucoin.market_client.get_symbol_list_v2()
-    for symbol in symbols:
-        if symbol["symbol"] == "BTC-GBP":
-            print(symbol)
+    if type(symbols) == dict:
+        for symbol in symbols:
+            if symbol["symbol"] == "BTC-GBP":
+                print(symbol)
 
     print("----------")
     trades = kucoin.get_last_trades("BTC-GBP")

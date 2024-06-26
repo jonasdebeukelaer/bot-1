@@ -58,7 +58,7 @@ class Trader(dspy.Module):
         if os.getenv("OPENAI_API_KEY") is None:
             raise ValueError("OPENAI_API_KEY is not set in the environment variables")
 
-        self.llama = dspy.GROQ(model="llama3-70b-8192", max_tokens=500, api_key=os.getenv("GROQ_API_KEY"))
+        self.llama = dspy.GROQ(model="llama3-70b-8192", max_tokens=500, api_key=os.getenv("GROQ_API_KEY", ""))
         self.gpt3_5 = dspy.OpenAI(model="gpt-3.5-turbo", api_key=os.getenv("OPENAI_API_KEY"))
         dspy.settings.configure(lm=self.llama)
 
