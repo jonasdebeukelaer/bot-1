@@ -1,32 +1,40 @@
 steps:
-  # Build the container image and push it with Kaniko
-  - id: "build image"
-    name: "gcr.io/kaniko-project/executor:latest"
-    waitFor: ["-"]
-    args:
-      - --dockerfile=Dockerfile
-      - --context=.
-      - --cache=true
-      - --cache-ttl=168h
-      - --destination=eu.gcr.io/$PROJECT_ID/bot-1:latest
 
-  # Deploy the bot-1 image to Cloud Run
-  - id: "deploy bot-1 service"
+  # Deploy data ingestor
+  - id: "deploy data ingestor function"
     name: "gcr.io/cloud-builders/gcloud"
-    waitFor: ["build image"]
+    waitFor: ["-"]
     entrypoint: "bash"
     args:
       - -c
       - |
-        gcloud run deploy bot-1 \
-        --image eu.gcr.io/$PROJECT_ID/bot-1:latest \
+        gcloud functions deploy data-ingestor \
+        --gen2 \
         --region europe-west1 \
-        --platform managed \
+        --runtime python311 \
+        --source "./src/data_ingestor" \
+        --entry-point "function_entry_point" \
+        --trigger-http \
         --no-allow-unauthenticated \
-        --concurrency 1 \
-        --cpu 1 \
-        --no-cpu-throttling \
-        --memory 512Mi \
-        --min-instances 1 \
-        --max-instances 1 \
+        --memory 512MiB \
         --set-secrets /mnt2/secrets.env=crypto-gpt-env-secrets:8
+
+  # Deploy bot
+  - id: "deploy bot function"
+    name: "gcr.io/cloud-builders/gcloud"
+    waitFor: ["-"]
+    entrypoint: "bash"
+    args:
+      - -c
+      - |
+        gcloud functions deploy bot \
+        --gen2 \
+        --region europe-west1 \
+        --runtime python311 \
+        --source "./src/bot" \
+        --entry-point "function_entry_point" \
+        --trigger-http \
+        --no-allow-unauthenticated \
+        --memory 1GiB \
+        --set-secrets /mnt2/secrets.env=crypto-gpt-env-secrets:8 \
+        --timeout 600

@@ -18,7 +18,7 @@ echo "Deployment started (Build ID: $BUILD_ID)."
 
 echo ""
 echo "Streaming build logs:"
-gcloud builds log $BUILD_ID --region $REGION --stream
+gcloud beta builds log $BUILD_ID --region $REGION --stream
 
 # Polling the build status
 while : ; do

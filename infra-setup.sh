@@ -17,10 +17,10 @@ fi
 gcloud config set project $PROJECT_ID
 gcloud config set run/region $REGION
 
-# allow Cloudbuild to work with cloud run services
+# allow cloud run to access cloud functions
 gcloud projects add-iam-policy-binding "$PROJECT_ID" \
     --member "serviceAccount:$PROJECT_NUMBER@cloudbuild.gserviceaccount.com" \
-    --role "roles/run.admin"
+    --role "roles/cloudfunctions.admin"
 
 # allow google cloud run access to ai settings
 gcloud secrets add-iam-policy-binding ${ENV_VAR_SECRETS_NAME} \
