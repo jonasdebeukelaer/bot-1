@@ -1,19 +1,25 @@
 from venv import logger
 
-from src.data_ingestor.crypto_indicators import CryptoIndicators
-from src.data_ingestor.news_extractor import NewsExtractor
-from src.data_ingestor.logger import logger
+from crypto_indicators import CryptoIndicators
+from news_extractor import NewsExtractor
+from logger import logger
 
 from google.cloud import firestore
 from dotenv import load_dotenv
+import functions_framework
+from flask import Request
 
 load_dotenv()
 
 
-def main():
+@functions_framework.http
+def main(request: Request):
+    logger.info("Starting data ingestion...")
+
+    logger.info("Initialising firestore connection...")
     db = firestore.Client(database="crypto-bot")
 
-    logger.info("Fetching and storing data...")
+    logger.info("Initialising fetchers...")
     crypto_indicators = CryptoIndicators()
     news_extractor = NewsExtractor(limit=10)
 
@@ -21,6 +27,8 @@ def main():
     _fetch_and_store_taapi_data(db, crypto_indicators, interval="1d")
     _fetch_and_store_alternative_me_data(db, crypto_indicators)
     _fetch_and_store_news(db, news_extractor)
+
+    logger.info("Data ingestion completed.")
 
 
 def _fetch_and_store_taapi_data(db, crypto_indicators, interval):
@@ -50,6 +58,4 @@ def _fetch_and_store_news(db, news_extractor):
 
 
 if __name__ == "__main__":
-    logger.info("Starting data ingestion...")
-    main()
-    logger.info("Data ingestion completed.")
+    main(Request(environ={}))
