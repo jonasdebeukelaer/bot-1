@@ -61,9 +61,10 @@ EXAMPLE_TAAPI_INDICATORS_DAILY = [
 ]
 
 EXAMPLE_ALT_ME = [
-    {"timestamp": "26-06-2024", "value_classification": "Fear"},
-    {"timestamp": "27-06-2024", "value_classification": "Greed"},
+    {"data": {"timestamp": "26-06-2024", "value_classification": "Fear"}},
+    {"data": {"timestamp": "27-06-2024", "value_classification": "Greed"}},
 ]
+
 
 class TestFormatHourlyData:
 

@@ -68,7 +68,7 @@ class TradingStrategy:
 
         trader_resp = self.trader(trading_input_data)
 
-        log_msg = "Received trade instructions: {}".format(str(trader_resp))
+        log_msg = f"Received trade instructions: {str(trader_resp)}"
         logger.log_info(log_msg)
 
         self.decision_tracker.record_trade_instructions(trader_resp)

@@ -15,15 +15,15 @@ class Logger:
         logging.getLogger().addHandler(logging.StreamHandler())
 
     def log_debug(self, msg: Any) -> None:
-        logging.debug(f"{self.counter}: {msg}")
+        logging.debug("%s: %s", self.counter, msg)
         self.counter += 1
 
     def log_info(self, msg: Any) -> None:
-        logging.info(f"{self.counter}: {msg}")
+        logging.info("%s: %s", self.counter, msg)
         self.counter += 1
 
     def log_error(self, msg: Any) -> None:
-        logging.error(f"{self.counter}: {msg}")
+        logging.error("%s: %s", self.counter, msg)
         self.counter += 1
 
     def reset_counter(self) -> None:

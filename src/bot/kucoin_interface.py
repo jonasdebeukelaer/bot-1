@@ -14,22 +14,22 @@ BTC_INCREMENT_DECIMAL = 4
 
 class KucoinInterface:
     def __init__(self):
-        API_KEY = os.environ.get("KUCOIN_API_KEY")
-        if not API_KEY:
+        api_key = os.environ.get("KUCOIN_API_KEY")
+        if not api_key:
             raise EnvironmentError("The KUCOIN_API_KEY environment variable is not set.")
-        API_SECRET = os.environ.get("KUCOIN_API_SECRET")
-        if not API_SECRET:
+        api_secret = os.environ.get("KUCOIN_API_SECRET")
+        if not api_secret:
             raise EnvironmentError("The KUCOIN_API_SECRET environment variable is not set.")
-        API_PASSPHRASE = os.environ.get("KUCOIN_API_PASSPHRASE")
-        if not API_PASSPHRASE:
+        api_passphrase = os.environ.get("KUCOIN_API_PASSPHRASE")
+        if not api_passphrase:
             raise EnvironmentError("The KUCOIN_API_PASSPHRASE environment variable is not set.")
-        URL = os.environ.get("KUCOIN_URL")
-        if not URL:
+        url = os.environ.get("KUCOIN_URL")
+        if not url:
             raise EnvironmentError("The KUCOIN_URL environment variable is not set.")
 
-        self.trade_client = Trade(key=API_KEY, secret=API_SECRET, passphrase=API_PASSPHRASE, url=URL)
-        self.user_client = User(key=API_KEY, secret=API_SECRET, passphrase=API_PASSPHRASE, url=URL)
-        self.market_client = Market(key=API_KEY, secret=API_SECRET, passphrase=API_PASSPHRASE, url=URL)
+        self.trade_client = Trade(key=api_key, secret=api_secret, passphrase=api_passphrase, url=url)
+        self.user_client = User(key=api_key, secret=api_secret, passphrase=api_passphrase, url=url)
+        self.market_client = Market(key=api_key, secret=api_secret, passphrase=api_passphrase, url=url)
 
     def execute_trade(self, latest_bitcoin_price: float, bitcoin_holding_percentage_request: int) -> None:
         portfolio_breakdown = self.get_portfolio_breakdown()
@@ -56,14 +56,14 @@ class KucoinInterface:
         side = "buy" if difference > 0 else "sell"
 
         timestamp = str(time.time_ns())[:-5]
-        id = f"{timestamp}_{trade_size_btc}_{side}"
+        trade_id = f"{timestamp}_{trade_size_btc}_{side}"
 
         try:
             # Execute trade
-            logger.log_info(f"Executing trade: {id}")
-            self.trade_client.create_market_order(clientOid=id, symbol="BTC-GBP", side=side, size=trade_size_btc)
+            logger.log_info(f"Executing trade: {trade_id}")
+            self.trade_client.create_market_order(clientOid=trade_id, symbol="BTC-GBP", side=side, size=trade_size_btc)
         except Exception as e:
-            if type(e.args) == tuple and "200004" in e.args[0]:
+            if isinstance(e.args, tuple) and "200004" in e.args[0]:
                 logger.log_error(
                     f"Insufficient funds in KuCoin to execute trade. Attempted with {trade_size_btc} BTC ({trade_size_gbp} GBP) at market price"
                 )
@@ -73,7 +73,7 @@ class KucoinInterface:
     def get_portfolio_breakdown(self) -> PortfolioBreakdown:
         data = self.user_client.get_account_list()
 
-        if type(data) != list:
+        if not isinstance(data, list):
             logger.log_error("Failed to get account list")
             return PortfolioBreakdown([])
 
@@ -95,7 +95,7 @@ class KucoinInterface:
         # NOTE: built in limit of up to 1 week old trades only
         data = self.trade_client.get_fill_list(tradeType="TRADE", symbol=symbol, pageSize=limit)
 
-        if type(data) != dict:
+        if not isinstance(data, dict):
             logger.log_error(f"Failed to get trades for {symbol}")
             return []
 
@@ -107,10 +107,10 @@ class KucoinInterface:
         logger.log_info(f"Last {limit} trades: {formatted}")
         return formatted
 
-    def get_part_order_book(self, symbol="BTC-GBP", pieces=20) -> Dict[str, Any]:
+    def get_part_order_book(self, symbol: str = "BTC-GBP", pieces=20) -> Dict[str, Any]:
         data = self.market_client.get_part_order(symbol=symbol, pieces=pieces)
 
-        if type(data) == dict:
+        if isinstance(data, dict):
             data["timestamp"] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(data["time"] / 1000))
             del data["time"], data["sequence"]
 
@@ -136,7 +136,7 @@ if __name__ == "__main__":
 
     print("----------")
     symbols = kucoin.market_client.get_symbol_list_v2()
-    if type(symbols) == dict:
+    if isinstance(symbols, dict):
         for symbol in symbols:
             if symbol["symbol"] == "BTC-GBP":
                 print(symbol)

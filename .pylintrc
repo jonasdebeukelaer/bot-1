@@ -29,3 +29,7 @@ disable=raw-checker-failed,
         use-implicit-booleaness-not-comparison-to-string,
         use-implicit-booleaness-not-comparison-to-zero,
         missing-docstring
+
+
+[FORMAT]
+max-line-length=120

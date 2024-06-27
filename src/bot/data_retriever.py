@@ -1,8 +1,9 @@
 from typing import List, Dict, Any
-from google.cloud import firestore
-from google.cloud.firestore_v1.field_path import FieldPath
 from dataclasses import dataclass
 from datetime import datetime
+
+from google.cloud import firestore
+from google.cloud.firestore_v1.field_path import FieldPath
 
 from logger import logger
 
