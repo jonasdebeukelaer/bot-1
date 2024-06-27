@@ -1,3 +1,6 @@
+-r ./src/bot/requirements.txt
+-r ./src/data_ingestor/requirements.txt
+
 # --- testing ---
 pytest~=8.0.1
 pytest-mock~=3.14.0
