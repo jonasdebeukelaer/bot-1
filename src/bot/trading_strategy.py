@@ -2,7 +2,6 @@ from data_retriever import CryptoData
 from typess.TraderInputData import TraderInputData
 from logger import logger
 from kucoin_interface import KucoinInterface
-from crypto_indicators import CryptoIndicators
 from llm_trader import Trader
 from decision_tracker import DecisionTracker
 from data_formatter import DataFormatter
