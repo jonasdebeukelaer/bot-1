@@ -25,4 +25,4 @@ logging_config = {
 }
 
 logging.config.dictConfig(logging_config)
-logger = logging.getLogger("default_logger")
+ingestor_logger = logging.getLogger("default_logger")

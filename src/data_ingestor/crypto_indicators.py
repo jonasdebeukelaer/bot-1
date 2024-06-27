@@ -2,7 +2,7 @@ import os
 import requests
 from typing import Dict, Any
 
-from logger import logger
+from ingestor_logger import ingestor_logger
 
 
 class CryptoIndicators:
@@ -88,7 +88,7 @@ class CryptoIndicators:
             return {"id": ts, "data": response.json()["data"]}
 
         else:
-            logger.info(response.text)
+            ingestor_logger.info(response.text)
             response.raise_for_status()
             return {}  # TODO: why linter compains if not included?
 

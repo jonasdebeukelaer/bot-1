@@ -5,7 +5,7 @@ from typing import Any, Dict, List
 from kucoin.client import Trade, User, Market
 
 from logger import logger
-from util import format_value
+from util import five_sig_fig
 from typess.PortfolioBreakdown import PortfolioBreakdown
 
 SMALLEST_TRADE_SIZE_PERCENTAGE = 10
@@ -102,7 +102,7 @@ class KucoinInterface:
         formatted = []
         for item in data["items"]:
             ts = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(item["createdAt"] / 1000))
-            formatted.append(f"{ts} {item['side']} {item['size']} {item['symbol']} at £{format_value(item['price'])}")
+            formatted.append(f"{ts} {item['side']} {item['size']} {item['symbol']} at £{five_sig_fig(item['price'])}")
 
         logger.log_info(f"Last {limit} trades: {formatted}")
         return formatted

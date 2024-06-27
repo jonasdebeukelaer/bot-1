@@ -4,7 +4,7 @@ from collections import deque
 from typing import Any, Dict
 
 from logger import logger
-from util import format_value
+from util import five_sig_fig
 
 MAX_INDICATOR_HISTORY = 10
 
@@ -33,9 +33,9 @@ class CryptoIndicators:
             formatted_results = {}
             for key, value in result["result"].items():
                 if isinstance(value, list):
-                    formatted_results[key] = [format_value(v) for v in value]
+                    formatted_results[key] = [five_sig_fig(v) for v in value]
                 else:
-                    formatted_results[key] = format_value(value)
+                    formatted_results[key] = five_sig_fig(value)
 
             if "value" in formatted_results:
                 indicator_value = formatted_results["value"]
@@ -87,38 +87,6 @@ class CryptoIndicators:
             f"symbol: {self.symbol}, interval: {self.interval}, exchange: {self.exchange}\n{formatted_history}"
         )
         return formatted_message
-
-    # TODO: implement
-    def backfill_indicator_history(self) -> None:
-        taapi_results = self._get_taapi_indicators()
-
-        # Parse and return the taapi_results
-        indicator_history = {}
-
-        # # Get alternative.me indicators, only if interval is 1d since fear/greed
-        # # index is only updated once a day
-        # if self.interval == "1d":
-        #     alternative_me_indicators = self._get_alternative_me_indicators()
-        #     indicators.update(alternative_me_indicators)
-
-        # for result in taapi_results:
-        #     indicator_name = result["id"]
-
-        #     formatted_results = {}
-        #     for key, value in result["result"].items():
-        #         if isinstance(value, list):
-        #             formatted_results[key] = [format_value(v) for v in value]
-        #         else:
-        #             formatted_results[key] = format_value(value)
-
-        #     if "value" in formatted_results:
-        #         indicator_value = formatted_results["value"]
-        #     else:
-        #         indicator_value = formatted_results
-        #     indicators[indicator_name] = indicator_value
-
-        # self.indicator_history.appendleft(indicator_history)
-        raise NotImplementedError
 
     def _get_taapi_indicators(self, result_count: int = 1) -> Any:
         # Define the construct
@@ -206,7 +174,6 @@ class CryptoIndicators:
         return {"fear/greed index": values}
 
     def _format_indicator_set(self, indicators: Dict[str, Any]) -> str:
-        # TODO: consider more than one value per indicator
         # TODO: volume seems off?
         formatted_indicators = ""
         for indicator_name, indicator_value in indicators.items():
