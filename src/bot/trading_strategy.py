@@ -1,30 +1,24 @@
-from typing import Any, Dict, List
-
+from data_retriever import CryptoData
 from typess.TraderInputData import TraderInputData
-from typess.PortfolioBreakdown import PortfolioBreakdown
 from logger import logger
 from kucoin_interface import KucoinInterface
 from crypto_indicators import CryptoIndicators
 from llm_trader import Trader
 from decision_tracker import DecisionTracker
-from news_extractor import NewsExtractor
+from data_formatter import DataFormatter
 
 
 class TradingStrategy:
-    def __init__(
-        self,
-        exchange_interface: KucoinInterface,
-        indicators_hourly: CryptoIndicators,
-        indicators_daily: CryptoIndicators,
-    ):
+    def __init__(self, exchange_interface: KucoinInterface, crypto_data: CryptoData):
         self.exchange_interface = exchange_interface
-        self.indicators_hourly = indicators_hourly
-        self.indicators_daily = indicators_daily
+        self.crypto_data = crypto_data
         self.trader = Trader()
         self.decision_tracker = DecisionTracker()
-        self.news_extractor = NewsExtractor()
+        self.data_formatter = DataFormatter()
 
     def execute(self):
+        # TODO: simplify logger and tidy
+        # TODO: split into smaller functions
         logger.reset_counter()
 
         logger.log_info("Starting new trading strategy execution...")
@@ -38,38 +32,40 @@ class TradingStrategy:
         logger.log_info("Getting order book...")
         order_book = self.exchange_interface.get_part_order_book()
 
-        logger.log_info("Getting latest news...")
-        news = self.news_extractor.get_news()
+        logger.log_info("Format hourly indicators...")
+        formatted_indicators_hourly = self.data_formatter.format_hourly_data(self.crypto_data.taapi_1h)
 
-        logger.log_info("Calling LLM for trade decision...")
-        self._make_trade_decision(
+        logger.log_info("Format daily indicators...")
+        formatted_indicators_daily = self.data_formatter.format_daily_data(
+            self.crypto_data.taapi_1d, self.crypto_data.alternative_me
+        )
+
+        logger.log_info("Format latest news...")
+        formatted_news = self.data_formatter.format_news(self.crypto_data.google_feed)
+
+        trading_input_data = TraderInputData(
+            formatted_indicators_hourly,
+            formatted_indicators_daily,
             portfolio_breakdown,
             last_trades,
             order_book,
-            news,
-            self.indicators_hourly.get_latest_price(),
+            formatted_news,
+        )
+
+        logger.log_info("Calling LLM for trade decision...")
+        self._make_trade_decision(
+            trading_input_data,
+            self.crypto_data.taapi_1d[0]["data"][1]["result"]["value"][0],
         )
 
         logger.log_info("Finished execution\n")
 
     def _make_trade_decision(
         self,
-        portfolio_breakdown: PortfolioBreakdown,
-        last_trades: List[str],
-        order_book: Dict[str, Any],
-        news: str,
+        trading_input_data: TraderInputData,
         latest_bitcoin_price: float,
     ) -> None:
         logger.log_info("Calling LLM for trading decision...")
-
-        trading_input_data = TraderInputData(
-            self.indicators_hourly.get_formatted_indicator_history(),
-            self.indicators_daily.get_formatted_indicator_history(),
-            portfolio_breakdown,
-            last_trades,
-            order_book,
-            news,
-        )
 
         trader_resp = self.trader(trading_input_data)
 
@@ -92,10 +88,4 @@ if __name__ == "__main__":
 
     load_dotenv()
 
-    ci = CryptoIndicators()
-    ci.fetch_indicators()
-
-    ci_daily = CryptoIndicators(interval="1d")
-    ci_daily.fetch_indicators()
-    ts = TradingStrategy(KucoinInterface(), ci, ci_daily)
-    ts.execute()
+    # ci = CryptoIndicators()

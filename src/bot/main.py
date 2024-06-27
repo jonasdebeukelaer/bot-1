@@ -2,7 +2,7 @@ from dotenv import load_dotenv
 
 from kucoin_interface import KucoinInterface
 from trading_strategy import TradingStrategy
-from crypto_indicators import CryptoIndicators
+from data_retriever import DataRetriever
 
 import functions_framework
 from flask import Request
@@ -25,19 +25,9 @@ def _load_secrets():
 
 def main():
     kucoin = KucoinInterface()
-    indicators_fetcher_hourly = CryptoIndicators()
-    indicators_fetcher_daily = CryptoIndicators(interval="1d")
-    trading_strategy = TradingStrategy(kucoin, indicators_fetcher_hourly, indicators_fetcher_daily)
-
-    try:
-        indicators_fetcher_hourly.fetch_indicators()
-        # TODO: find way to update daily indicator in history if same day
-        indicators_fetcher_daily.fetch_indicators()
-
-        trading_strategy.execute()
-
-    except KeyboardInterrupt:
-        pass
+    crypto_data = DataRetriever().get_latest()
+    trading_strategy = TradingStrategy(kucoin, crypto_data)
+    trading_strategy.execute()
 
 
 if __name__ == "__main__":
