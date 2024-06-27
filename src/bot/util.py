@@ -1,7 +1,7 @@
 from typing import Any
 
 
-def format_value(val: Any) -> str:
+def five_sig_fig(val: Any) -> str:
     """
     formats to 5 significant figures
     """
