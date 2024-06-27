@@ -52,3 +52,5 @@ gcloud scheduler jobs create http bot-scheduler-job \
         --uri "https://europe-west1-crypto-gpt-69.cloudfunctions.net/bot" \
         --oidc-service-account-email "scheduler-invoker@${PROJECT_ID}.iam.gserviceaccount.com" \
         --time-zone "Etc/UTC"
+
+# firebase indexes created manually
