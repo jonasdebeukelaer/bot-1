@@ -1,6 +1,3 @@
-import os
-from venv import logger
-
 from crypto_indicators import CryptoIndicators
 from news_extractor import NewsExtractor
 from ingestor_logger import ingestor_logger
@@ -12,7 +9,7 @@ from flask import Request
 
 
 @functions_framework.http
-def function_entry_point(request: Request):
+def function_entry_point(_: Request):
     _load_secrets()
     main()
     return "Data ingestion completed.", 200
@@ -37,15 +34,15 @@ def main():
 
 
 def _load_secrets():
-    with open("/mnt2/secrets.env", "r") as src_file:
-        with open(".env", "w") as dest_file:
+    with open("/mnt2/secrets.env", "r", encoding="utf-8") as src_file:
+        with open(".env", "w", encoding="utf-8") as dest_file:
             dest_file.write(src_file.read())
 
     load_dotenv()
 
 
 def _fetch_and_store_taapi_data(db, crypto_indicators, interval):
-    ingestor_logger.info(f"Fetching and storing TAAPI ({interval})...")
+    ingestor_logger.info("Fetching and storing TAAPI (%s)...", interval)
     taapi_indicators = crypto_indicators.get_taapi_indicators(interval=interval)
     doc_ref = db.collection(f"indicators__taapi__{interval}").document(taapi_indicators["id"])
     doc_ref.set({"data": taapi_indicators["data"]})

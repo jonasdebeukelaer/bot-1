@@ -1,6 +1,7 @@
 import os
-import requests
 from typing import Dict, Any
+import requests
+
 
 from ingestor_logger import ingestor_logger
 
@@ -46,7 +47,10 @@ class CryptoIndicators:
                     "results": 1,
                     "addResultTimestamp": False,
                 },
-                # { TODO: this is requiring too many candles to generate? error: {"error":"Your request requires too many candles to complete. We do not allow requests to be calculated with a larger candle set than 1000. Your request requires 1400"}
+                # { TODO: this is requiring too many candles to generate?
+                # error: {"error":"Your request requires too many candles to complete.
+                # We do not allow requests to be calculated with a larger candle set than 1000.
+                # Your request requires 1400"}
                 #     "id": "400EMA",
                 #     "indicator": "ema",
                 #     "period": 400,
@@ -74,6 +78,7 @@ class CryptoIndicators:
             "https://api.taapi.io/bulk",
             json=data,
             headers={"Content-Type": "application/json"},
+            timeout=60,
         )
         if response.status_code == 200:
             ts = None

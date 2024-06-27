@@ -31,7 +31,7 @@ class NewsExtractor:
 
             return news_items
         except Exception as e:
-            raise ValueError(f"An error occurred while fetching news: {str(e)}")
+            raise ValueError("An error occurred while fetching news") from e
 
     def _clean_html(self, html_text: str) -> str:
         """Remove HTML tags from a string."""
