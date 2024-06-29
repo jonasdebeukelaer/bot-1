@@ -17,7 +17,7 @@ steps:
         --trigger-http \
         --no-allow-unauthenticated \
         --memory 512MiB \
-        --set-secrets /mnt2/secrets.env=crypto-gpt-env-secrets:8
+        --set-secrets /mnt2/secrets.env=crypto-gpt-env-secrets:9
 
   # Deploy bot
   - id: "deploy bot function"
@@ -36,5 +36,5 @@ steps:
         --trigger-http \
         --no-allow-unauthenticated \
         --memory 1GiB \
-        --set-secrets /mnt2/secrets.env=crypto-gpt-env-secrets:8 \
+        --set-secrets /mnt2/secrets.env=crypto-gpt-env-secrets:9 \
         --timeout 600
