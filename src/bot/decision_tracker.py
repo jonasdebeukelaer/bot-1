@@ -1,4 +1,5 @@
 import time
+from typing_extensions import deprecated
 
 import gspread
 from google.auth import default
@@ -8,6 +9,7 @@ from typess.portfolio_breakdown import PortfolioBreakdown
 from llm_trader import TraderResponse
 
 
+@deprecated("In favour of decision_persistance.py")
 class DecisionTracker:
     def __init__(self):
         scopes = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
@@ -18,6 +20,7 @@ class DecisionTracker:
         self.trades_sheet = self.client.open(sheet_name).sheet1
         self.portfolio_sheet = self.client.open(sheet_name).get_worksheet_by_id(1500161050)
 
+    @deprecated("see class msg")
     def record_trade_instructions(self, trade_resp: TraderResponse) -> None:
         dt = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
@@ -41,6 +44,7 @@ class DecisionTracker:
         except ValueError as e:
             logger.log_error(f"ERROR: {e}")
 
+    @deprecated("see class msg")
     def record_portfolio(self, portfolio_breakdown: PortfolioBreakdown) -> None:
         dt = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 

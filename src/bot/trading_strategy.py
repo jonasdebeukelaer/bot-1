@@ -4,6 +4,7 @@ from logger import logger
 from coinbase_interface import CoinbaseInterface
 from llm_trader import Trader
 from decision_tracker import DecisionTracker
+from decision_persistance import DecisionPersistance
 from data_formatter import DataFormatter
 
 
@@ -13,6 +14,7 @@ class TradingStrategy:
         self.crypto_data = crypto_data
         self.trader = Trader()
         self.decision_tracker = DecisionTracker()
+        self.decision_persistance = DecisionPersistance()
         self.data_formatter = DataFormatter()
 
     def execute(self):
@@ -55,6 +57,7 @@ class TradingStrategy:
         logger.log_info(log_msg)
 
         self.decision_tracker.record_trade_instructions(trader_resp)
+        self.decision_persistance.store_llm_output(trader_resp)
 
         self.exchange_interface.execute_trade(
             trading_input_data.portfolio_breakdown.bitcoin_price,
@@ -62,4 +65,5 @@ class TradingStrategy:
         )
         new_portfolio_breakdown = self.exchange_interface.get_portfolio_breakdown()
         self.decision_tracker.record_portfolio(new_portfolio_breakdown)
+        self.decision_persistance.store_portfolio(new_portfolio_breakdown, trader_resp)
         logger.log_info("Trade request executed successfully.")
