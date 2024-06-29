@@ -72,8 +72,6 @@ class Trader(dspy.Module):
 
         self.get_data_issue_checker = dspy.ChainOfThought(DataQualityCheckSig)
 
-        # TODO move outside this class. Doesn't belong here
-        self.previous_bitcoin_percentage: int = -1
         self.trader_count = trader_count
 
     def forward(self, trading_input_data: TraderInputData) -> TraderResponse:
@@ -91,9 +89,6 @@ class Trader(dspy.Module):
         # to prevent request throtteling from Groq
         with dspy.context(lm=self.gpt3_5):
             data_issue_checker_answer = self.get_data_issue_checker(context=context)
-
-        # set previous bitcoin percentage for next call
-        self.previous_bitcoin_percentage = desired_bitcoin_percentage
 
         return TraderResponse(
             desired_bitcoin_percentage.answer,
