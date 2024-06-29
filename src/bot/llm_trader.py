@@ -4,8 +4,8 @@ import time
 import dspy
 
 from logger import logger
-from typess.TraderInputData import TraderInputData
-from typess.TraderResponse import TraderResponse
+from typess.trader_input_data import TraderInputData
+from typess.trader_response import TraderResponse
 
 
 class TradeDecisionSig(dspy.Signature):
@@ -107,17 +107,17 @@ class Trader(dspy.Module):
 
         Current portfolio breakdown: {trading_input_data.portfolio_breakdown.get_formatted()}
 
-        Last 20 trades within 7 days: {trading_input_data.last_trades}
+        Your current bitcoin holding percentage is: {trading_input_data.portfolio_breakdown.get_btc_percentage()}%
+
+        Last 10 orders you have made on Coinbase: {trading_input_data.last_orders}
 
         Hourly price and indicators of Bitcoin: {trading_input_data.indicator_history_hourly}
 
         Daily price and indicators of Bitcoin: {trading_input_data.indicator_history_daily}
 
-        Kucoin order book (20 entries): {trading_input_data.order_book}
+        Coinbase product order book (20 entries): {trading_input_data.product_book}
 
         Latest Bitcoin and cryptocurrency news: {trading_input_data.news}
-
-        Your current bitcoin holding percentage is: {self.previous_bitcoin_percentage if self.previous_bitcoin_percentage != 0 else 'unknown'}%
         """
 
         logger.log_info("Context to be sent to LLM: " + context)

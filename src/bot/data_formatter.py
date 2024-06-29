@@ -2,6 +2,7 @@ from typing import Dict, List
 from datetime import datetime
 
 from util import five_sig_fig
+from logger import logger
 
 
 class DataFormatter:
@@ -9,10 +10,12 @@ class DataFormatter:
         pass
 
     def format_hourly_data(self, taapi_indicators: list) -> str:
+        logger.log_info("Format hourly indicators...")
         indicators_history = self._restructure_indicators_history(taapi_indicators)
         return self._stringify_indicators(indicators_history)
 
     def format_daily_data(self, taapi_indicators: list, alternative_me: list) -> str:
+        logger.log_info("Format daily indicators...")
         indicators_history = self._restructure_indicators_history(taapi_indicators)
         indicators_history = self._append_fear_greed_index(indicators_history, alternative_me)
         return self._stringify_indicators(indicators_history)
@@ -84,6 +87,7 @@ class DataFormatter:
 
     def format_news(self, news_items: List[Dict]) -> str:
         """Format news items into a readable text block."""
+        logger.log_info("Format latest news...")
 
         formatted_text = ""
         for i, item in enumerate(news_items, 1):

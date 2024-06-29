@@ -1,19 +1,10 @@
-from typing import List, Dict, Any
-from dataclasses import dataclass
 from datetime import datetime
 
 from google.cloud import firestore
 from google.cloud.firestore_v1.field_path import FieldPath
 
 from logger import logger
-
-
-@dataclass
-class CryptoData:
-    taapi_1h: List[Dict[str, Any]]
-    taapi_1d: List[Dict[str, Any]]
-    alternative_me: List[Dict[str, Any]]
-    google_feed: List[Dict[str, Any]]
+from typess.crypto_data import CryptoData
 
 
 class DataRetriever:

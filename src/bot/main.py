@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 
-from kucoin_interface import KucoinInterface
+from coinbase_interface import CoinbaseInterface
 from trading_strategy import TradingStrategy
 from data_retriever import DataRetriever
 
@@ -24,9 +24,9 @@ def _load_secrets():
 
 
 def main():
-    kucoin = KucoinInterface()
+    coinbase_interface = CoinbaseInterface()
     crypto_data = DataRetriever().get_latest()
-    trading_strategy = TradingStrategy(kucoin, crypto_data)
+    trading_strategy = TradingStrategy(coinbase_interface, crypto_data)
     trading_strategy.execute()
 
 

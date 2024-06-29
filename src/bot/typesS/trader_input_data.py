@@ -1,6 +1,6 @@
 from typing import List, Dict, Any
 
-from typess.PortfolioBreakdown import PortfolioBreakdown
+from typess.portfolio_breakdown import PortfolioBreakdown
 
 
 class TraderInputData:
@@ -9,15 +9,15 @@ class TraderInputData:
         indicator_history_hourly: str,
         indicator_history_daily: str,
         portfolio_breakdown: PortfolioBreakdown,
-        last_trades: List[str],
-        order_book: Dict[str, Any],
+        last_orders: List[Dict[str, Any]],
+        product_book: List[Dict[str, Any]],
         news: str,
     ):
         self.indicator_history_hourly = indicator_history_hourly
         self.indicator_history_daily = indicator_history_daily
         self.portfolio_breakdown = portfolio_breakdown
-        self.last_trades = last_trades
-        self.order_book = order_book
+        self.last_orders = last_orders
+        self.product_book = product_book
         self.news = news
 
     def get_indicator_history_hourly(self):
@@ -29,17 +29,17 @@ class TraderInputData:
     def get_portfolio_breakdown(self):
         return self.portfolio_breakdown
 
-    def get_last_trades(self):
-        return self.last_trades
+    def get_last_orders(self):
+        return self.last_orders
 
-    def get_order_book(self):
-        return self.order_book
+    def get_product_book(self):
+        return self.product_book
 
     def get_news(self):
         return self.news
 
     def __str__(self):
-        return f"TradingInputData(indicator_history_hourly={self.indicator_history_hourly}, indicator_history_daily={self.indicator_history_daily}, portfolio_breakdown={self.portfolio_breakdown}, last_trades={self.last_trades}, order_book={self.order_book}, news={self.news})"
+        return f"TradingInputData(indicator_history_hourly={self.indicator_history_hourly}, indicator_history_daily={self.indicator_history_daily}, portfolio_breakdown={self.portfolio_breakdown}, last_orders={self.last_orders}, product_book={self.product_book}, news={self.news})"
 
     def __repr__(self):
         return self.__str__()

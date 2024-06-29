@@ -4,7 +4,7 @@ import gspread
 from google.auth import default
 
 from logger import logger
-from typess.PortfolioBreakdown import PortfolioBreakdown
+from typess.portfolio_breakdown import PortfolioBreakdown
 from llm_trader import TraderResponse
 
 
@@ -41,15 +41,15 @@ class DecisionTracker:
         except ValueError as e:
             logger.log_error(f"ERROR: {e}")
 
-    def record_portfolio(self, portfolio_breakdown: PortfolioBreakdown, latest_bitcoin_price: float) -> None:
+    def record_portfolio(self, portfolio_breakdown: PortfolioBreakdown) -> None:
         dt = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
         account_data = [
             dt,
-            portfolio_breakdown.raw["GBP"],
-            portfolio_breakdown.raw["BTC"],
+            portfolio_breakdown.portfolio["GBP"],
+            portfolio_breakdown.portfolio["BTC"],
             "-",
-            portfolio_breakdown.get_total_value_gbp(latest_bitcoin_price),
+            portfolio_breakdown.get_total_value_gbp(),
         ]
 
         try:
@@ -57,7 +57,7 @@ class DecisionTracker:
 
         except gspread.exceptions.APIError as e:
             logger.log_error(
-                f"ERROR: failed to record account data to Google Sheet (data: {portfolio_breakdown.raw}). {e}"
+                f"ERROR: failed to record account data to Google Sheet (data: {portfolio_breakdown.portfolio}). {e}"
             )
         except ValueError as e:
             logger.log_error(f"ERROR: {e}")
