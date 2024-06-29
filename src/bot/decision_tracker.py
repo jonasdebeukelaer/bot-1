@@ -28,10 +28,10 @@ class DecisionTracker:
                 "-",  # deprecated
                 "-",  # deprecated
                 "-",  # deprecated
-                trade_resp.get_decision_rationale(),  # decision for the trade amount
-                trade_resp.get_data_requests(),
-                trade_resp.get_data_issues(),
-                trade_resp.get_trading_decision(),
+                trade_resp.decision_rationale,  # decision for the trade amount
+                trade_resp.data_requests,
+                trade_resp.data_issues,
+                trade_resp.trading_decision,
             ]
             self.trades_sheet.append_row(trade_data)
 
@@ -49,7 +49,7 @@ class DecisionTracker:
             portfolio_breakdown.portfolio["GBP"],
             portfolio_breakdown.portfolio["BTC"],
             "-",
-            portfolio_breakdown.get_total_value_gbp(),
+            portfolio_breakdown.total_value_gbp,
         ]
 
         try:

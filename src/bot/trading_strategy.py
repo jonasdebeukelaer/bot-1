@@ -39,7 +39,6 @@ class TradingStrategy:
 
         self._make_trade_decision(
             trading_input_data,
-            portfolio_breakdown.get_bitcoin_price(),
         )
 
         logger.log_info("Finished execution\n")
@@ -47,7 +46,6 @@ class TradingStrategy:
     def _make_trade_decision(
         self,
         trading_input_data: TraderInputData,
-        latest_bitcoin_price: float,
     ) -> None:
         logger.log_info("Calling LLM for trading decision...")
 
@@ -59,7 +57,7 @@ class TradingStrategy:
         self.decision_tracker.record_trade_instructions(trader_resp)
 
         self.exchange_interface.execute_trade(
-            trading_input_data.portfolio_breakdown.get_bitcoin_price(),
+            trading_input_data.portfolio_breakdown.bitcoin_price,
             trader_resp.trading_decision,
         )
         new_portfolio_breakdown = self.exchange_interface.get_portfolio_breakdown()

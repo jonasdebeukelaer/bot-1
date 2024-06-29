@@ -20,32 +20,32 @@ def test_initialization(sample_data, bitcoin_price):
 
 def test_get_formatted(sample_data, bitcoin_price):
     pb = PortfolioBreakdown(sample_data, bitcoin_price)
-    formatted = pb.get_formatted()
+    formatted = pb.formatted
     assert "0.5 BTC" in formatted
     assert "1000.0 GBP" in formatted
 
 
 def test_get_bitcoin_price(sample_data, bitcoin_price):
     pb = PortfolioBreakdown(sample_data, bitcoin_price)
-    assert pb.get_bitcoin_price() == 30000
+    assert pb.bitcoin_price == 30000
 
 
 def test_get_btc_percentage(sample_data, bitcoin_price):
     pb = PortfolioBreakdown(sample_data, bitcoin_price)
-    btc_percentage = pb.get_btc_percentage()
+    btc_percentage = pb.btc_percentage
     expected_percentage = (0.5 * 30000 / (0.5 * 30000 + 1000)) * 100
     assert pytest.approx(btc_percentage, 0.01) == expected_percentage
 
 
 def test_get_btc_in_gbp(sample_data, bitcoin_price):
     pb = PortfolioBreakdown(sample_data, bitcoin_price)
-    btc_in_gbp = pb.get_btc_in_gbp()
+    btc_in_gbp = pb.btc_in_gbp
     assert btc_in_gbp == 0.5 * 30000
 
 
 def test_get_total_value_gbp(sample_data, bitcoin_price):
     pb = PortfolioBreakdown(sample_data, bitcoin_price)
-    total_value = pb.get_total_value_gbp()
+    total_value = pb.total_value_gbp
     assert total_value == 0.5 * 30000 + 1000
 
 
@@ -56,6 +56,6 @@ def test_zero_bitcoin_price(sample_data):
 
 def test_empty_portfolio(bitcoin_price):
     pb = PortfolioBreakdown([], bitcoin_price)
-    assert pb.get_btc_percentage() == 0
-    assert pb.get_btc_in_gbp() == 0
-    assert pb.get_total_value_gbp() == 0
+    assert pb.btc_percentage == 0
+    assert pb.btc_in_gbp == 0
+    assert pb.total_value_gbp == 0

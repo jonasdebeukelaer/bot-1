@@ -1,3 +1,6 @@
+# pylint: disable=line-too-long
+# disable while prompts are long and manual
+
 import os
 import time
 
@@ -105,9 +108,9 @@ class Trader(dspy.Module):
         context = f"""
         Current time: {current_time}
 
-        Current portfolio breakdown: {trading_input_data.portfolio_breakdown.get_formatted()}
+        Current portfolio breakdown: {trading_input_data.portfolio_breakdown.formatted}
 
-        Your current bitcoin holding percentage is: {trading_input_data.portfolio_breakdown.get_btc_percentage()}%
+        Your current bitcoin holding percentage is: {trading_input_data.portfolio_breakdown.btc_percentage}%
 
         Last 10 orders you have made on Coinbase: {trading_input_data.last_orders}
 

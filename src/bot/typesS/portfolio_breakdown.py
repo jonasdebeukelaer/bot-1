@@ -1,5 +1,4 @@
 from typing import Dict, List
-
 from dataclasses import dataclass, field
 
 
@@ -14,13 +13,12 @@ class PortfolioBreakdown:
         if self.bitcoin_price <= 0:
             raise ValueError("Bitcoin price must be positive")
 
-    def get_formatted(self) -> List[str]:
+    @property
+    def formatted(self) -> List[str]:
         return [f"{value} {key}" for key, value in self.portfolio.items()]
 
-    def get_bitcoin_price(self) -> float:
-        return self.bitcoin_price
-
-    def get_btc_percentage(self) -> float:
+    @property
+    def btc_percentage(self) -> float:
         """Returns the percentage of the portfolio that is in BTC by value."""
 
         btc_amount = self.portfolio.get("BTC", 0)
@@ -31,13 +29,15 @@ class PortfolioBreakdown:
 
         return (btc_amount / total_portfolio_value_btc) * 100 if total_portfolio_value_btc != 0 else 0
 
-    def get_btc_in_gbp(self) -> float:
+    @property
+    def btc_in_gbp(self) -> float:
         """Returns the value of the BTC in GBP."""
 
         btc_amount = self.portfolio.get("BTC", 0)
         return btc_amount * self.bitcoin_price
 
-    def get_total_value_gbp(self) -> float:
+    @property
+    def total_value_gbp(self) -> float:
         """Returns the total value of the portfolio in GBP."""
 
         btc_amount = self.portfolio.get("BTC", 0)

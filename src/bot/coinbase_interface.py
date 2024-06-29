@@ -32,7 +32,7 @@ class CoinbaseInterface:
             raise ValueError(f"Invalid percentage value '{bitcoin_holding_percentage_request}'")
 
         # calculate trade size in btc
-        current_btc_percentage = portfolio_breakdown.get_btc_percentage()
+        current_btc_percentage = portfolio_breakdown.btc_percentage
         difference = bitcoin_holding_percentage_request - current_btc_percentage
 
         if abs(difference) < SMALLEST_TRADE_SIZE_PERCENTAGE:
@@ -41,7 +41,7 @@ class CoinbaseInterface:
             )
             return
 
-        btc_in_gbp = portfolio_breakdown.get_btc_in_gbp()
+        btc_in_gbp = portfolio_breakdown.btc_in_gbp
         trade_size_gbp = abs(btc_in_gbp * difference / 100)
         trade_size_btc = round(trade_size_gbp / latest_bitcoin_price, BTC_INCREMENT_DECIMAL)
 
@@ -91,7 +91,7 @@ class CoinbaseInterface:
         bitcoin_price = self._get_product_price()
 
         portfolio = PortfolioBreakdown(succinct_porfolio, bitcoin_price)
-        logger.log_info(f"Portfolio breakdown: {portfolio.get_formatted()}")
+        logger.log_info(f"Portfolio breakdown: {portfolio.formatted}")
         return portfolio
 
     def _get_product_price(self, product_id: str = "BTC-GBP") -> float:
