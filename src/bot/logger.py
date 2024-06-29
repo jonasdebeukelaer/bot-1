@@ -4,14 +4,14 @@ from typing import Any
 
 
 class Logger:
-    def __init__(self, filename: str = "bot.log"):
+    def __init__(self):
         self.counter = 1
-        self.setup_logger(filename)
+        self.setup_logger()
 
-    def setup_logger(self, filename: str) -> None:
+    def setup_logger(self) -> None:
         level = logging.DEBUG if os.environ.get("DEBUG", "false") == "true" else logging.INFO
 
-        logging.basicConfig(filename=filename, level=level, format="%(asctime)s - %(levelname)s - %(message)s")
+        logging.basicConfig(level=level, format="%(asctime)s - %(levelname)s - %(message)s")
         logging.getLogger().addHandler(logging.StreamHandler())
 
     def log_debug(self, msg: Any) -> None:
@@ -30,4 +30,4 @@ class Logger:
         self.counter = 1
 
 
-logger = Logger("bot.log")
+logger = Logger()
