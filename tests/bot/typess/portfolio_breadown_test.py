@@ -46,7 +46,7 @@ def test_get_btc_in_gbp(sample_data, bitcoin_price):
 def test_get_total_value_gbp(sample_data, bitcoin_price):
     pb = PortfolioBreakdown(sample_data, bitcoin_price)
     total_value = pb.total_value_gbp
-    assert total_value == 0.5 * 30000 + 1000
+    assert float(total_value) == 0.5 * 30000 + 1000
 
 
 def test_zero_bitcoin_price(sample_data):
@@ -58,4 +58,4 @@ def test_empty_portfolio(bitcoin_price):
     pb = PortfolioBreakdown([], bitcoin_price)
     assert pb.btc_percentage == 0
     assert pb.btc_in_gbp == 0
-    assert pb.total_value_gbp == 0
+    assert pb.total_value_gbp == "0"

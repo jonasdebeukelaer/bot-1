@@ -1,6 +1,8 @@
 from typing import Dict, List
 from dataclasses import dataclass, field
 
+from util import five_sig_fig
+
 
 @dataclass
 class PortfolioBreakdown:
@@ -27,7 +29,10 @@ class PortfolioBreakdown:
         gbp_to_btc = gbp_amount / self.bitcoin_price
         total_portfolio_value_btc = btc_amount + gbp_to_btc
 
-        return (btc_amount / total_portfolio_value_btc) * 100 if total_portfolio_value_btc != 0 else 0
+        if total_portfolio_value_btc == 0:
+            return 0.0
+
+        return float(five_sig_fig((btc_amount / total_portfolio_value_btc) * 100))
 
     @property
     def btc_in_gbp(self) -> float:
@@ -37,11 +42,11 @@ class PortfolioBreakdown:
         return btc_amount * self.bitcoin_price
 
     @property
-    def total_value_gbp(self) -> float:
+    def total_value_gbp(self) -> str:
         """Returns the total value of the portfolio in GBP."""
 
         btc_amount = self.portfolio.get("BTC", 0)
         gbp_amount = self.portfolio.get("GBP", 0)
 
         btc_to_gbp = btc_amount * self.bitcoin_price
-        return gbp_amount + btc_to_gbp
+        return five_sig_fig(gbp_amount + btc_to_gbp)
