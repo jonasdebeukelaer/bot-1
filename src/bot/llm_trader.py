@@ -65,7 +65,6 @@ class Trader(dspy.Module):
         self.gpt3_5 = dspy.OpenAI(model="gpt-3.5-turbo", api_key=os.getenv("OPENAI_API_KEY"))
         dspy.settings.configure(lm=self.llama)
 
-        # TODO: play around with number of traders etc, possibly automate
         self.get_trade_decision = dspy.ChainOfThought(TradeDecisionSig)
         self.get_best_trade_decision = dspy.MultiChainComparison(TradeDecisionSig, M=trader_count, temperature=0.5)
         self.get_data_request = dspy.ChainOfThought(DataRequestSig)
@@ -99,9 +98,6 @@ class Trader(dspy.Module):
 
     def build_context(self, trading_input_data: TraderInputData) -> str:
         current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-
-        # TODO: figure out if order book summary would help, and best way to get it
-        # Coinbase product order book (20 entries): {trading_input_data.product_book}
 
         context = f"""
         Current time: {current_time}

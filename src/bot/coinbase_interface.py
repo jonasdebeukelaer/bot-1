@@ -11,7 +11,7 @@ from typess.portfolio_breakdown import PortfolioBreakdown
 SMALLEST_TRADE_SIZE_PERCENTAGE = 10
 BTC_INCREMENT_DECIMAL = 4
 
-PORTFOLIO_UUID = "476ae963-495c-4edd-8872-16fb0b54802d"
+BOT_1_PORTFOLIO_UUID = "476ae963-495c-4edd-8872-16fb0b54802d"
 
 
 class CoinbaseInterface:
@@ -26,6 +26,7 @@ class CoinbaseInterface:
         self.client = RESTClient(api_key=api_key, api_secret=api_secret)
 
     def execute_trade(self, latest_bitcoin_price: float, bitcoin_holding_percentage_request: int) -> None:
+        """Execute a trade to adjust the bitcoin holding percentage in the portfolio."""
         portfolio_breakdown = self.get_portfolio_breakdown()
 
         if bitcoin_holding_percentage_request < 0 or bitcoin_holding_percentage_request > 100:
@@ -60,7 +61,7 @@ class CoinbaseInterface:
                     client_order_id=order_id,
                     product_id="BTC-GBP",
                     base_size=str(trade_size_btc),
-                    retail_portfolio_id=PORTFOLIO_UUID,
+                    retail_portfolio_id=BOT_1_PORTFOLIO_UUID,
                 )
 
             else:
@@ -75,6 +76,8 @@ class CoinbaseInterface:
             raise e
 
     def get_portfolio_breakdown(self) -> PortfolioBreakdown:
+        """Get the portfolio breakdown, or holdings info for different currencies, for this Coinbase portfolio."""
+
         logger.log_info("Getting portfolio breakdown...")
         accounts = self.client.get_accounts()
 
@@ -98,10 +101,11 @@ class CoinbaseInterface:
         return float(self.client.get_product(product_id=product_id)["price"])
 
     def get_latest_orders(self, product_id="BTC-GBP", limit=10) -> List[Dict[str, Any]]:
+        """Get the latest orders made in this Coinbase portfolio for a given product_id."""
         logger.log_info("Getting latest order...")
 
         # ordered by most recent first by default
-        orders = self.client.list_orders(product_id=product_id, limit=limit, retail_portfolio_id=PORTFOLIO_UUID)[
+        orders = self.client.list_orders(product_id=product_id, limit=limit, retail_portfolio_id=BOT_1_PORTFOLIO_UUID)[
             "orders"
         ]
 
@@ -119,6 +123,10 @@ class CoinbaseInterface:
         return succinct_orders
 
     def get_product_book(self, product_id: str = "BTC-GBP", limit=10) -> List[Dict[str, Any]]:
+        """
+        Get the product book for a given product_id.
+        Not currently used
+        """
         logger.log_info("Getting product book...")
         return self.client.get_product_book(product_id=product_id, limit=limit)["pricebook"]["bids"]
 
