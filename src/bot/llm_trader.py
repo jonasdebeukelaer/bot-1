@@ -15,7 +15,7 @@ class TradeDecisionSig(dspy.Signature):
     """
     You are an advanced swing trader with a medium-high risk appetite, trading Bitcoin. Your decisions are driven by a blend of technical analysis, market trends, and the latest news, with a strict policy against succumbing to FOMO and FUD. Decisions should be made as a percentage of portfolio to hold in bitcoin. The rest will be held as GBP. Your strategy involves capitalizing on short to medium-term fluctuations and managing risks by adjusting the position size according to the provided context.
 
-    Take into consideration that trading fees are 0.1% for both buying and selling, and the proportion of your portfolio which is already bitcoin.
+    Consider that trading fees are 0.6% for takers and 0.4% for makers, so avoid unecessary trades, by opting for slightly longer term strategies (days to weeks).
 
     Question: What percentage of your porfolio you wish to be in bitcoin?
     """
@@ -29,7 +29,7 @@ class TradeDecisionSig(dspy.Signature):
 
 class DataRequestSig(dspy.Signature):
     """
-    You are an advanced swing trader with a medium-high risk appetite, trading Bitcoin.
+    You are an advanced swing trader with a medium-high risk appetite, trading Bitcoin. Be succinct in your answer.
 
     Question: "What additional data that isn't included in the context which would be helpful for making trade decisions?"
     """
@@ -41,7 +41,7 @@ class DataRequestSig(dspy.Signature):
 
 class DataQualityCheckSig(dspy.Signature):
     """
-    You are a very good data error checker, use your knowledge of data and trading in general to answer the following question.
+    You are a highly skilled data error checker, use your knowledge of data and trading in general to answer the following question. Be succinct in your answer.
 
     Question: Are there any issues you can see in the data provided in the context?
     """
