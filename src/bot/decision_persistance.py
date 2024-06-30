@@ -24,7 +24,7 @@ class DecisionPersistance:
                 "trading_decision": trade_resp.trading_decision,
             }
 
-            self.trades_collection.add(trade_data)
+            self.trades_collection.document(trade_resp.trade_ts).set(trade_data)
 
         except Exception as e:
             logger.log_error(f"ERROR: failed to record trade data to Firestore (trade data: {trade_resp}). {e}")
@@ -40,7 +40,7 @@ class DecisionPersistance:
         }
 
         try:
-            self.portfolio_collection.add(account_data)
+            self.portfolio_collection.document(trade_resp.trade_ts).set(account_data)
 
         except Exception as e:
             logger.log_error(
