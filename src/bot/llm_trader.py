@@ -100,6 +100,9 @@ class Trader(dspy.Module):
     def build_context(self, trading_input_data: TraderInputData) -> str:
         current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
+        # TODO: figure out if order book summary would help, and best way to get it
+        # Coinbase product order book (20 entries): {trading_input_data.product_book}
+
         context = f"""
         Current time: {current_time}
 
@@ -113,9 +116,7 @@ class Trader(dspy.Module):
 
         Daily price and indicators of Bitcoin: {trading_input_data.indicator_history_daily}
 
-        Coinbase product order book (20 entries): {trading_input_data.product_book}
-
-        Latest Bitcoin and cryptocurrency news: {trading_input_data.news}
+        Latest Bitcoin and cryptocurrency news via google news feed: {trading_input_data.news}
         """
 
         logger.log_info("Context to be sent to LLM: " + context)
