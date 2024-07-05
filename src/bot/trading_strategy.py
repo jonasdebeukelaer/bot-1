@@ -1,3 +1,4 @@
+from typing_extensions import deprecated
 from data_retriever import CryptoData
 from typess.trader_input_data import TraderInputData
 from logger import logger
@@ -7,7 +8,7 @@ from decision_tracker import DecisionTracker
 from decision_persistance import DecisionPersistance
 from data_formatter import DataFormatter
 
-
+@deprecated("No longer used for now, may reuse bits later")
 class TradingStrategy:
     def __init__(self, exchange_interface: CoinbaseInterface, crypto_data: CryptoData):
         self.exchange_interface = exchange_interface
