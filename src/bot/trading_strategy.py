@@ -18,7 +18,6 @@ class TradingStrategy:
         self.data_formatter = DataFormatter()
 
     def execute(self):
-        logger.reset_counter()
         logger.log_info("Starting new trading strategy execution...")
 
         portfolio_breakdown = self.exchange_interface.get_portfolio_breakdown()

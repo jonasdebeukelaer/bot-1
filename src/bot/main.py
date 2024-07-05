@@ -1,7 +1,7 @@
 from dotenv import load_dotenv
 
 from coinbase_interface import CoinbaseInterface
-from trading_strategy import TradingStrategy
+from trading_strategy_v2 import TradingStrategy
 from data_retriever import DataRetriever
 
 import functions_framework
