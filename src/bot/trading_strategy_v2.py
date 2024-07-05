@@ -11,8 +11,7 @@ from data_formatter import DataFormatter
 
 
 class TradingStrategy:
-    def __init__(self, coinbase_interface: CoinbaseInterface, crypto_data: CryptoData):
-        self.coinbase_interface = coinbase_interface
+    def __init__(self, _coinbase_interface: CoinbaseInterface, crypto_data: CryptoData):
         self.crypto_data = crypto_data
 
         self.trader = Trader()
@@ -32,7 +31,7 @@ class TradingStrategy:
         formatted_news = self.data_formatter.format_news(self.crypto_data.google_feed)
 
         price_prediction_input_data = PredictionInputData(
-            self.coinbase_interface.get_product_price(),
+            self.crypto_data.latest_product_price,
             formatted_indicators_hourly,
             formatted_indicators_daily,
             formatted_news,
