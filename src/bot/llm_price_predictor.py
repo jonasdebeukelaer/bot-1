@@ -2,15 +2,19 @@
 # disable while prompts are long and manual
 
 import os
+from datetime import datetime, timedelta
 
 import dspy
 
+from data_formatter import DataFormatter
 from logger import logger
+from retrievers.historic_data_retriever import HistoricDataClient
 from typess.prediction_input_data import PredictionInputData
+from typess.crypto_data import CryptoData
 
 
 class PricePredictor(dspy.Module):
-    def __init__(self):
+    def __init__(self, target_td: timedelta):
         super().__init__()
 
         if os.getenv("GROQ_API_KEY") is None:
@@ -22,11 +26,20 @@ class PricePredictor(dspy.Module):
         self.llama = dspy.GROQ(model="llama3-70b-8192", max_tokens=500, api_key=os.getenv("GROQ_API_KEY", ""))
         self.gpt3_5 = dspy.OpenAI(model="gpt-3.5-turbo", api_key=os.getenv("OPENAI_API_KEY"))
 
+        self.data_retriever = HistoricDataClient("-")
+
+        self.data_formatter = DataFormatter()
+
         self.price_prediction = dspy.ChainOfThought(PricePredictionSig)
         self.data_request = dspy.ChainOfThought(DataRequestSig)
         self.data_issue_checker = dspy.ChainOfThought(DataQualityCheckSig)
 
-    def forward(self, input_data: PredictionInputData) -> dspy.Prediction:
+        self.target_td = target_td
+
+    def forward(self, ts: datetime) -> dspy.Prediction:
+        retrieved_data: dspy.Prediction = self.data_retriever(query=ts)
+
+        input_data = self._build_input_data(retrieved_data.crypto_data)
         context_str = self._build_context(input_data)
 
         with dspy.context(lm=self.llama):
@@ -37,12 +50,24 @@ class PricePredictor(dspy.Module):
             llm_data_complaints = self.data_issue_checker(context=context_str)
 
         return dspy.Prediction(
+            ts=input_data.ts_str,
+            target_ts=input_data.target_ts_str,
+            target_td=input_data.target_td_str,
             prediction_mean=price_prediction.mean,
             prediction_std_dev=price_prediction.std_dev,
             metadata=dict(
                 llm_data_requests=llm_data_requests.answer,
                 llm_data_complaints=llm_data_complaints.answer,
             ),
+        )
+
+    def _build_input_data(self, crypto_data: CryptoData) -> PredictionInputData:
+        return PredictionInputData(
+            crypto_data.latest_product_price,
+            self.data_formatter.format_hourly_data(crypto_data.taapi_1h),
+            self.data_formatter.format_daily_data(crypto_data.taapi_1d, crypto_data.alternative_me),
+            self.data_formatter.format_news(crypto_data.google_feed),
+            self.target_td,
         )
 
     def _build_context(self, input_data: PredictionInputData) -> str:

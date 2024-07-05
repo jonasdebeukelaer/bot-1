@@ -2,7 +2,6 @@ from dotenv import load_dotenv
 
 from coinbase_interface import CoinbaseInterface
 from trading_strategy_v2 import TradingStrategy
-from data_retriever import DataRetriever
 
 import functions_framework
 from flask import Request
@@ -25,8 +24,7 @@ def _load_secrets():
 
 def main():
     coinbase_interface = CoinbaseInterface()
-    crypto_data = DataRetriever().get_latest()
-    trading_strategy = TradingStrategy(coinbase_interface, crypto_data)
+    trading_strategy = TradingStrategy(coinbase_interface)
     trading_strategy.execute()
 
 
