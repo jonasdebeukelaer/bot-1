@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from crypto_indicators import CryptoIndicators
 from news_extractor import NewsExtractor
 from ingestor_logger import ingestor_logger
@@ -6,6 +8,9 @@ from google.cloud import firestore
 from dotenv import load_dotenv
 import functions_framework
 from flask import Request
+
+EXTRACTION_TIMESTAMP = datetime.now()
+TS_FIELD = {"extraction_timestamp": EXTRACTION_TIMESTAMP}
 
 
 @functions_framework.http
@@ -45,7 +50,7 @@ def _fetch_and_store_taapi_data(db, crypto_indicators, interval):
     ingestor_logger.info("Fetching and storing TAAPI (%s)...", interval)
     taapi_indicators = crypto_indicators.get_taapi_indicators(interval=interval)
     doc_ref = db.collection(f"indicators__taapi__{interval}").document(taapi_indicators["id"])
-    doc_ref.set({"data": taapi_indicators["data"]})
+    doc_ref.set(dict(**TS_FIELD, data=taapi_indicators["data"]))
     ingestor_logger.info("Done")
 
 
@@ -53,7 +58,7 @@ def _fetch_and_store_alternative_me_data(db, crypto_indicators):
     ingestor_logger.info("Fetching and storing Alternative.me...")
     alternative_me_indicators = crypto_indicators.get_alternative_me_indicators()
     doc_ref = db.collection("indicators__alternative_me").document(alternative_me_indicators["id"])
-    doc_ref.set({"data": alternative_me_indicators["data"]})
+    doc_ref.set(dict(**TS_FIELD, data=alternative_me_indicators["data"]))
     ingestor_logger.info("Done")
 
 
@@ -62,7 +67,7 @@ def _fetch_and_store_news(db, news_extractor):
     latest_news = news_extractor.get_news()
     for news_item in latest_news:
         doc_ref = db.collection("news__google_feed").document(news_item["published"])
-        doc_ref.set({"data": news_item})
+        doc_ref.set(dict(**TS_FIELD, data=news_item))
 
     ingestor_logger.info("Done")
 
