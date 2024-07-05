@@ -91,13 +91,13 @@ class CoinbaseInterface:
                     }
                 )
 
-        bitcoin_price = self._get_product_price()
+        bitcoin_price = self.get_product_price()
 
         portfolio = PortfolioBreakdown(succinct_porfolio, bitcoin_price)
         logger.log_info(f"Portfolio breakdown: {portfolio.formatted}")
         return portfolio
 
-    def _get_product_price(self, product_id: str = "BTC-GBP") -> float:
+    def get_product_price(self, product_id: str = "BTC-GBP") -> float:
         return float(self.client.get_product(product_id=product_id)["price"])
 
     def get_latest_orders(self, product_id="BTC-GBP", limit=10) -> List[Dict[str, Any]]:
