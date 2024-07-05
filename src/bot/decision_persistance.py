@@ -10,8 +10,16 @@ class DecisionPersistance:
     def __init__(self):
         self.db = firestore.Client(database="crypto-bot")
 
+        self.price_prediction_collection = self.db.collection("price_predictions")
         self.trades_collection = self.db.collection("trades")
         self.portfolio_collection = self.db.collection("portfolio")
+
+    def store_prediction_data(self, record_data: dict) -> None:
+        try:
+            self.price_prediction_collection.document().set(record_data)
+            logger.log_info("Prediction data persisted.")
+        except Exception as e:
+            logger.log_error(f"ERROR: failed to record trade data to Firestore (prediction data: {record_data}). {e}")
 
     def store_llm_output(self, trade_resp: TraderResponse) -> None:
         try:
