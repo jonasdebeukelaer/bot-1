@@ -75,9 +75,9 @@ class PricePredictionSig(dspy.Signature):
 
     timestamp = dspy.InputField(desc="The timestamp for which you are predicting the price of Bitcoin.")
 
-    mean = dspy.OutputField(desc="A single number representing the mean of your price prediction in GBP.")
+    mean = dspy.OutputField(desc="Mean GBP price prediction, as a float.")
 
-    std_dev = dspy.OutputField(desc="A single number representing the standard deviation of your price prediction.")
+    std_dev = dspy.OutputField(desc="Standard deviation of the GBP price prediction, as a float.")
 
 
 class DataRequestSig(dspy.Signature):
