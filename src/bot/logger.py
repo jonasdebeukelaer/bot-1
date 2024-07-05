@@ -26,8 +26,5 @@ class Logger:
         logging.error("%s: %s", self.counter, msg)
         self.counter += 1
 
-    def reset_counter(self) -> None:
-        self.counter = 1
-
 
 logger = Logger()
